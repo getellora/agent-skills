@@ -1,0 +1,19 @@
+{
+  "name": "getellora",
+  "owner": {
+    "name": "Ellora",
+    "email": "hello@getellora.com",
+    "url": "https://getellora.com"
+  },
+  "description": "Ellora: brand-voice QA, desloping, and writing-brief review as an agent skill plus a hosted MCP server.",
+  "version": "1.0.0",
+  "plugins": [
+    {
+      "name": "ellora",
+      "source": ".",
+      "description": "Brand-voice QA, desloping, and writing-brief review for everything your agent writes. Registers the hosted Ellora MCP server and runs the review loop before a draft is shown.",
+      "category": "writing",
+      "tags": ["brand-voice", "deslop", "ai-slop", "voice-qa", "writing", "mcp"]
+    }
+  ]
+}
