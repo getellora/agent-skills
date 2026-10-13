@@ -11,9 +11,15 @@
     {
       "name": "ellora",
       "source": ".",
-      "description": "Brand-voice QA, desloping, and writing-brief review for everything your agent writes. Registers the hosted Ellora MCP server and runs the review loop before a draft is shown.",
       "category": "writing",
-      "tags": ["brand-voice", "deslop", "ai-slop", "voice-qa", "writing", "mcp"]
+      "tags": [
+        "brand-voice",
+        "deslop",
+        "ai-slop",
+        "voice-qa",
+        "writing",
+        "mcp"
+      ]
     }
   ]
 }

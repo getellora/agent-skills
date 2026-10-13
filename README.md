@@ -26,10 +26,9 @@ This installs both skills into every supported agent it finds on your machine, i
 ```bash
 claude plugin marketplace add getellora/agent-skills
 claude plugin install ellora@getellora
-claude mcp login ellora
 ```
 
-The plugin registers the `ellora` MCP server and both skills. The last command runs the OAuth sign-in in your browser.
+The plugin registers the MCP server as `plugin:ellora:ellora` and loads both skills. Then run `/mcp` inside Claude Code and authenticate that server. The OAuth sign-in opens in your browser.
 
 ### Claude Code, skills only
 
@@ -57,13 +56,13 @@ Then copy `skills/ellora` into `~/.claude/skills/` (user scope) or `.claude/skil
 
    VS Code uses the same entry under a `servers` key instead of `mcpServers`.
 
-2. Copy `skills/ellora` into the client's skills directory: `.cursor/skills/`, `.agents/skills/`, `~/.codex/skills/`, or the equivalent.
+2. Copy `skills/ellora` into the project's `.agents/skills/` directory. Codex, Cursor, Cline, Gemini CLI, and GitHub Copilot read it. Windsurf reads `.windsurf/skills/` and Grok reads `.grok/skills/`.
 
 3. Complete the OAuth prompt the client shows on first use.
 
 ### Hosted chat clients (ChatGPT, claude.ai, Claude Desktop, Perplexity)
 
-Add a custom remote connector with the server URL above. Then paste the contents of `skills/ellora/SKILL.md` into the project or system instructions, because these clients do not load skill files.
+Add a custom remote connector with the server URL above. Where the client has a skills setting, as claude.ai and Claude Desktop do, upload the `skills/ellora` folder as a custom skill. Otherwise paste the contents of `skills/ellora/SKILL.md` into the project or system instructions.
 
 ### From the URL
 
@@ -81,7 +80,7 @@ The skill triggers on mentions of Ellora, deslop or AI slop, brand voice QA, voi
 
 ## Keeping the copies in sync
 
-`skills/ellora/SKILL.md` must match `public/SKILL.md` in the `ellora-website` repository, which is what https://getellora.com/SKILL.md serves. Change one, change the other in the same pass, and bump `metadata.version` in both.
+The copy served at https://getellora.com/SKILL.md comes from the private `ellora-website` repository, and this note is for the maintainers of both. A change to the skill lands in both places in the same pass: `skills/ellora/SKILL.md` here and `public/SKILL.md` there. Bump `metadata.version` in both files and `version` in `.claude-plugin/plugin.json`. Claude Code keeps plugin users on the old version until that number changes.
 
 ## Links
 

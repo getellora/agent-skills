@@ -35,7 +35,7 @@ already use.
 | Surface | 12 tools + 1 prompt, all prefixed `ellora_` |
 | App (team admin) | https://app.getellora.com — voice profiles, briefs, tokens |
 | Website / demo | https://getellora.com |
-| Skill source | https://github.com/getellora/agent-skills (mirrored at https://getellora.com/SKILL.md) |
+| Skill repo | https://github.com/getellora/agent-skills (the same file is served at https://getellora.com/SKILL.md) |
 
 Start a free **Solo** account (the website's **Free** plan) at
 https://app.getellora.com/register. Verify your email with the code or magic
@@ -124,6 +124,11 @@ entry to the client's MCP settings, then restart it.
 
 VS Code uses the same entry but under a `servers` key instead of `mcpServers`.
 
+Claude Code can instead install the Ellora plugin, which adds this server and
+this skill together: `claude plugin marketplace add getellora/agent-skills`,
+then `claude plugin install ellora@getellora`. A server added that way is
+listed as `plugin:ellora:ellora`.
+
 **Hosted chat clients** (ChatGPT, Claude Desktop, claude.ai, Perplexity, and
 similar): open the client's connector/MCP settings, choose to add a **custom
 remote connector**, and give it the URL above. No headers, no keys.
@@ -138,7 +143,9 @@ OAuth is the only auth path, so the client has to run the flow — you cannot
 curl it into place.
 
 - Command Code: `cmd mcp auth ellora`, or run `/mcp` and authenticate.
-- Claude Code: `claude mcp login ellora`, or run `/mcp` and authenticate.
+- Claude Code: run `/mcp` and authenticate `ellora`. A server you added with
+  `claude mcp add` also accepts `claude mcp login ellora`; one installed
+  through the Ellora plugin is listed as `plugin:ellora:ellora`, so use `/mcp`.
 - Other clients: trigger a connect/authenticate action and follow the browser
   prompt.
 
