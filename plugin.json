@@ -1,0 +1,95 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "ellora",
+  "version": "1.4.0",
+  "description": "Brand-voice QA, desloping, and writing-brief review for everything your agent writes. Connects the hosted Ellora MCP server and runs the review loop before a draft is shown.",
+  "author": {
+    "name": "Ellora",
+    "email": "hello@getellora.com",
+    "url": "https://getellora.com"
+  },
+  "homepage": "https://getellora.com",
+  "repository": "https://github.com/getellora/agent-skills",
+  "license": "MIT",
+  "keywords": ["brand-voice", "deslop", "ai-slop", "voice-qa", "writing", "editing"],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Ellora",
+        "shortDescription": "Brand voice QA for drafts",
+        "longDescription": "Your drafts get checked before they ship. Connect a free Solo account and the model checks each draft against your saved voice profile, cuts generic AI phrasing, and applies the rules in your writing brief. Ellora returns findings and rewrite notes, the model rewrites, and Ellora checks the new draft. The loop stops when the draft passes. Ellora reads only the drafts you send for review and the profiles and briefs in your own workspace.",
+        "developerName": "Ellora",
+        "category": "Productivity",
+        "capabilities": ["Review drafts", "Check brand voice", "Apply writing briefs"],
+        "websiteURL": "https://getellora.com",
+        "supportURL": "https://github.com/getellora/agent-skills/issues",
+        "privacyPolicyURL": "https://getellora.com/privacy/",
+        "termsOfServiceURL": "https://getellora.com/terms/",
+        "defaultPrompt": [
+          "Review this draft against my brand voice.",
+          "Remove the AI slop from this LinkedIn post.",
+          "Write a launch email and check it with Ellora."
+        ],
+        "brandColor": "#1A1A1A",
+        "composerIcon": "./assets/icon.png",
+        "logo": "./assets/logo.png"
+      },
+      "onboardingSkill": "./skills/ellora/SKILL.md",
+      "review": {
+        "test_cases": {
+          "positive": [
+            {
+              "description": "List the saved voice profiles",
+              "prompt": "Which Ellora voice profiles can I use?",
+              "tools_triggered": "ellora_profiles_fetch_active",
+              "expected_behavior": "List the active voice profiles in the connected workspace by name, or say there are none."
+            },
+            {
+              "description": "Review a short draft",
+              "prompt": "Check this post with Ellora before I publish it: We are thrilled to announce a seamless, game-changing update that will revolutionize how you work.",
+              "tools_triggered": "ellora_profiles_fetch_active, ellora_briefs_fetch_active, ellora_session_start, ellora_review",
+              "expected_behavior": "Start a review session with a saved voice profile and a brief, call ellora_review, rewrite the draft from the returned guidance, and review again until it passes or Ellora reports diminishing returns."
+            },
+            {
+              "description": "Write and review in one step",
+              "prompt": "Write a three-sentence launch email for our new export feature and run it through Ellora.",
+              "tools_triggered": "ellora_session_start, ellora_review",
+              "expected_behavior": "Draft the email, review it with Ellora, and show only the reviewed version with a one-line note on what changed."
+            },
+            {
+              "description": "List writing briefs",
+              "prompt": "What writing briefs do I have in Ellora?",
+              "tools_triggered": "ellora_briefs_fetch_active",
+              "expected_behavior": "List the active writing briefs with their audience, intent, and format."
+            },
+            {
+              "description": "Create the first voice profile",
+              "prompt": "I have no Ellora voice profile yet. Build one from these three posts I wrote: [paste three samples].",
+              "tools_triggered": "ellora_profiles_fetch_active, ellora_profile_create",
+              "expected_behavior": "Confirm that no profile exists, create one from the samples, and return its name. On the free Solo plan, do not create a second profile when one already exists."
+            }
+          ],
+          "negative": [
+            {
+              "description": "Unrelated request",
+              "prompt": "What is the weather in Paris tomorrow?"
+            },
+            {
+              "description": "Plagiarism check",
+              "prompt": "Check whether this essay was copied from the internet."
+            },
+            {
+              "description": "Publishing on the user's behalf",
+              "prompt": "Post this draft to my LinkedIn account."
+            }
+          ]
+        },
+        "commerce": false,
+        "commerce_description": "This plugin does not sell products or process payments. The Solo plan is free."
+      },
+      "publication": {
+        "release_notes": "Initial release: the Ellora review loop skill and the hosted Ellora MCP server."
+      }
+    }
+  }
+}
