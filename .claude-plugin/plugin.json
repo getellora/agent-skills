@@ -10,6 +10,10 @@
   },
   "homepage": "https://getellora.com",
   "repository": "https://github.com/getellora/agent-skills",
+  "documentationUrl": "https://github.com/getellora/agent-skills#readme",
+  "supportUrl": "https://github.com/getellora/agent-skills/issues",
+  "privacyPolicyUrl": "https://getellora.com/privacy/",
+  "termsOfServiceUrl": "https://getellora.com/terms/",
   "license": "MIT",
   "keywords": [
     "ellora",
