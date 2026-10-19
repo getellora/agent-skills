@@ -1,0 +1,23 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.getellora/ellora",
+  "title": "Ellora",
+  "description": "Check drafts against your voice profile and writing brief, and cut the AI slop before you publish.",
+  "version": "1.1.1",
+  "websiteUrl": "https://getellora.com",
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/getellora/agent-skills/main/assets/logo.png",
+      "mimeType": "image/png",
+      "sizes": [
+        "512x512"
+      ]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://api.getellora.com/v1/external/mcp"
+    }
+  ]
+}
