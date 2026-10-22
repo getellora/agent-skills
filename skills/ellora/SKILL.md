@@ -16,7 +16,7 @@ description: >-
   before you show the user a draft; do not wait to be asked.
 metadata:
   author: Ellora
-  version: "1.4"
+  version: "1.5"
 ---
 
 # Ellora
@@ -212,17 +212,19 @@ also lives on the server as the `ellora_review_loop` MCP prompt.
    draft as `content`. It takes no profile or brief argument of its own — both
    are already locked into the session. `content` is capped at 100,000
    characters, so split anything longer into successive pieces.
-6. **Do what `next_action` says.**
+6. **Read `convergence_recommendation`, then do what `next_action` says.**
+   `next_action` is a plain-language instruction; `convergence_recommendation`
+   is the enum it is built from:
    - `keep_rewriting` → rewrite using the response's own `rewrite_guidance`,
      then go back to step 5 with the same `content_session_id`. **Do not show
      the draft to the user yet** — you are mid-loop.
-   - `ready_to_verify` → no mandatory finding remains. Check *this same
-     response*: it already carries a `verification` block comparing the
-     content against the session's first-reviewed content — **unless this was
-     the session's very first call**, in which case there is nothing yet to
-     compare against (treat it like `keep_rewriting` if findings remain, or
-     deliver as-is if there are none). Don't run another pass just to get
-     verified. Deliver once `verification.passed: true`.
+   - `ready_to_verify` → no mandatory finding remains. On the session's
+     first call, `next_action` says so and the draft can be delivered as-is.
+     On any later call, *this same response* carries a `verification` block
+     comparing the content against the session's first-reviewed content.
+     Don't run another pass just to get verified. Deliver once
+     `verification.passed: true`. Rewrite with `rewrite_guidance` only when the
+     response includes it; it is omitted on a pass.
    - `diminishing_returns` → the rewrites stopped helping, or you hit
      `max_iterations`. Stop looping, tell the user exactly what is still
      flagged, and ask how to proceed.
@@ -230,11 +232,16 @@ also lives on the server as the `ellora_review_loop` MCP prompt.
    **Blue findings never gate.** Severity `blue` (counted separately in
    `current_finding_counts.blue`) are optional AI-Editor suggestions: they
    never make `next_action` `keep_rewriting` and are never a reason to run
-   another pass. Apply or ignore them as you see fit.
+   another pass. Apply or ignore them as you see fit, but they are often real
+   tells ("here's the thing", "honestly?"), so read them before you deliver.
+   If you apply any, call `ellora_review` once more with the edited text so the
+   version you deliver is the version Ellora checked.
 7. **Verification and learning are automatic.** A passing call that isn't the
    session's first already carries the `verification` block, and on success
    against a saved profile a `learning_event`. There is no separate verify call
-   to make.
+   to make. That learning write happens without any extra call, so a passing
+   review always changes the profile it ran against. For a test or dry run,
+   use a scratch profile, not a writer's real one.
 8. **Teach the profile only on explicit approval.** If the user accepts the
    delivered rewrite *and* approves the rules you extracted from it, call
    `ellora_learn_from_accepted_rewrite` with `user_approved: true`. Never on

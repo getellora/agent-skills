@@ -95,14 +95,16 @@ the draft passes. There is no separate verify call.
 
 6. **Do what `next_action` says.** The response carries
    `convergence_recommendation`, `iteration` / `max_iterations`, and a
-   plain-language `next_action`. Follow it:
+   plain-language `next_action`. The bullets below are the
+   `convergence_recommendation` values; `next_action` says the same thing as
+   an instruction. Follow it:
    - **`keep_rewriting`** → go to step 7. **Do not show the draft to the
      user yet.** You are mid-loop.
-   - **`ready_to_verify`** → no mandatory finding remains. **This same
-     response** already includes the `verification` block (step 8) — do not
-     run another pass just to get verified. If this was the session's very
-     first call there is nothing to compare against yet: treat it like
-     `keep_rewriting` if findings remain, or deliver as-is if there are none.
+   - **`ready_to_verify`** → no mandatory finding remains. On a later call,
+     **this same response** already includes the `verification` block (step
+     8), so do not run another pass just to get verified. On the session's
+     first call there is nothing to compare against, and `next_action` says
+     the draft can be delivered as-is.
    - **`diminishing_returns`** → the rewrites have stopped helping, or you
      have hit `max_iterations`. Stop looping on your own. Tell the user
      exactly what is still flagged and ask how they want to proceed (ship
@@ -111,11 +113,17 @@ the draft passes. There is no separate verify call.
    **Blue findings never gate.** Severity `blue` (counted separately in
    `current_finding_counts.blue`) are optional AI-Editor suggestions: they
    never make `next_action` `keep_rewriting` and are never a reason to run
-   another pass. Apply or ignore them as you see fit.
+   another pass. Apply or ignore them as you see fit, but read them first:
+   they often catch real tells ("here's the thing", "honestly?"). If you
+   apply any, call `ellora_review` once more with the edited text so the
+   version you deliver is the version Ellora checked.
 
 7. **Rewrite, then re-review.** Use the response's own `rewrite_guidance`
    field to rewrite the content yourself, then **go back to step 5** with the
-   new text and the same `content_session_id`.
+   new text and the same `content_session_id`. Send the whole revised content,
+   not only the changed sentences, and change only the sentences the
+   guidance's **Edit scope** names. A case-style or point-of-view finding
+   covers every sentence even though it is reported on sentence 1.
 
    Keep going around 5 → 6 → 7 until step 6 sends you out of the loop. Do
    not stop early just because the draft "seems good enough" — the
@@ -127,7 +135,9 @@ the draft passes. There is no separate verify call.
    block comparing the final text against the session's original content —
    and, on success against a saved profile, a `learning_event`. There is no
    separate verify call to make. Stop and deliver once you see
-   `verification.passed: true`.
+   `verification.passed: true`. Because that learning write needs no extra
+   call, a passing review always changes the profile it ran against: for a
+   test or dry run, use a scratch profile, not a writer's real one.
 
 9. **Teach the profile only on explicit approval.** If the user accepts the
    delivered rewrite AND approves one or more concise rules you extracted
