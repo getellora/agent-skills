@@ -16,7 +16,7 @@ description: >-
   before you show the user a draft; do not wait to be asked.
 metadata:
   author: Ellora
-  version: "1.4"
+  version: "1.5"
 ---
 
 # Ellora
@@ -43,10 +43,12 @@ link to create your account. Solo includes one voice profile and does not
 include team members. Accounts created before Solo launched keep their
 Team plan.
 
-For more voice profiles and team members, schedule a call from the dashboard
-Pricing page or https://cal.com/getellorademo/client-demo. Team plans (the
-website's **Enterprise** plan) are offered on half-yearly (six-month) and yearly
-contracts only, starting at $1,999 for six months depending on requirements. Ellora can upgrade your existing account after the call.
+**Team** is for in-house teams that need more voice profiles and members.
+
+Email us at hello@getellora.com or set up a call at https://cal.com/getellorademo/client-demo.
+The dashboard Pricing page and https://getellora.com/#pricing list the plans (no
+prices shown) and the same schedule-call path. Ellora can upgrade your existing
+account once we've talked.
 
 ## First: work out which state you are in
 
@@ -84,11 +86,11 @@ Solo supports one voice profile and no additional team members. If a profile
 already exists, use it; do not create another profile or workspace to bypass
 the limit.
 
-For team access, book a 30-minute call on their own content:
-https://cal.com/getellorademo/client-demo.
-The dashboard Pricing page provides the same schedule-call path. Team plans
-are available on half-yearly (six-month) and yearly contracts only, starting
-at $1,999 for six months depending on requirements. Questions: hello@getellora.com.
+For Team access:
+
+Email us at hello@getellora.com or set up a call at https://cal.com/getellorademo/client-demo.
+The dashboard Pricing page and https://getellora.com/#pricing list the plans (no
+prices shown) and provide the same schedule-call path.
 
 If signup or authentication fails, report the actual error and offer to
 continue without Ellora's review. Never present unreviewed output as reviewed.
@@ -274,7 +276,10 @@ Prompts: `ellora_review_loop`.
    did not get back from `ellora_review`.
 2. **Don't route around access or plan limits.** Signup requires accepting the
    terms and verifying the email; connection requires OAuth. Solo permits one voice profile
-   and no team members. Use the Pricing page to discuss a Team upgrade.
+   and no team members. See the dashboard Pricing page or
+   https://getellora.com/#pricing for Team plans (listed without
+   prices). Email us at hello@getellora.com or set up a call at
+   https://cal.com/getellorademo/client-demo.
 3. **Don't show unreviewed drafts as reviewed**, and don't claim a piece passed
    when you stopped on `diminishing_returns`.
 4. **Follow `next_action`**, not your own judgment, about whether to keep
