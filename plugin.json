@@ -77,7 +77,7 @@
               "description": "Create the first voice profile",
               "prompt": "I have no Ellora voice profile yet. Build one from these three posts I wrote: [paste three samples].",
               "tools_triggered": "ellora_profiles_fetch_active, ellora_profile_create",
-              "expected_behavior": "Confirm that no profile exists, create one from the samples, and return its name. On the free Solo plan, do not create a second profile when one already exists."
+              "expected_behavior": "Confirm that no profile exists, create one from the samples, and return its name. On the Free plan, do not create a second profile when one already exists."
             }
           ],
           "negative": [
