@@ -94,28 +94,27 @@ the draft passes. There is no separate verify call.
    current draft as `content`.
 
 6. **Read `convergence_recommendation`, then do what `next_action` says.**
-   These are separate fields. `convergence_recommendation` is the enum
-   (`keep_rewriting`, `ready_to_verify`, `diminishing_returns`).
-   `next_action` is plain language built from it. The response also carries
+   Separate fields: `convergence_recommendation` is `keep_rewriting`,
+   `ready_to_verify`, or `diminishing_returns`; `next_action` is the imperative
+   summary (and may name open blue suggestions). The response also carries
    `iteration` / `max_iterations`. Follow `next_action`:
-   - **`keep_rewriting`** → go to step 7. **Do not show the draft to the
-     user yet.** You are mid-loop.
-   - **`ready_to_verify`** → no mandatory finding remains. On a later call,
-     **this same response** already includes the `verification` block (step
-     8), so do not run another pass just to get verified. On the session's
-     first call there is nothing to compare against, and `next_action` says
-     the draft can be delivered as-is. If `verification.passed` is `false`,
-     follow `next_action` and loop again (step 7 when `rewrite_guidance` is
-     present).
-   - **`diminishing_returns`** → the rewrites have stopped helping, or you
-     have hit `max_iterations`. Stop looping on your own. Tell the user
-     exactly what is still flagged and ask how they want to proceed (ship
-     as-is / keep going / adjust the voice profile or brief).
+   - **`keep_rewriting`** → open mandatory findings and/or a failed verification
+     with passes left. The response includes `rewrite_guidance` (mandatory
+     Red/Yellow only). Go to step 7. **Do not show the draft to the user yet.**
+   - **`ready_to_verify`** → no mandatory findings remain. On the session's
+     first review, `next_action` says deliver as-is. On later reviews, this
+     response includes `verification` — deliver when `verification.passed` is
+     `true`. When `verification.passed` is `false`, the server updates
+     `convergence_recommendation` and `next_action` for that failure; follow
+     the updated `next_action` and do not resubmit the same text unchanged.
+   - **`diminishing_returns`** → mandatory findings stalled, you hit
+     `max_iterations`, or verification failed on the last allowed pass. Stop
+     looping. Tell the user what is still wrong and ask how to proceed.
 
-   **Blue findings never gate.** Optional AI-Editor suggestions in
-   `current_finding_counts.blue`. They never set `convergence_recommendation`
-   to `keep_rewriting` and never require another pass. Read them before you
-   deliver; apply or ignore as you see fit.
+   **Blue findings never gate.** Optional suggestions in
+   `current_finding_counts.blue`. They never change `convergence_recommendation`,
+   never appear in `rewrite_guidance`'s edit scope, and never require another
+   pass on their own. Read `next_action` for open blue notes; apply or ignore.
 
 7. **Rewrite, then re-review.** When the response includes `rewrite_guidance`,
    use it to rewrite the content yourself, then **go back to step 5** with the
@@ -134,10 +133,10 @@ the draft passes. There is no separate verify call.
    block comparing the final text against the session's original content —
    and, on success against a saved profile, a `learning_event`. There is no
    separate verify call to make. Stop and deliver once you see
-   `verification.passed: true`. When verification fails, follow `next_action`;
-   `rewrite_guidance` is only included when the post-verification step sets
-   `convergence_recommendation` to `keep_rewriting`, so handle a missing field.
-   Because that learning write needs no extra
+   `verification.passed: true`. A failed verify sets `convergence_recommendation`
+   to `keep_rewriting` (with `rewrite_guidance`) until the pass limit, then
+   `diminishing_returns` without `rewrite_guidance` — follow `next_action` in
+   either case. Because that learning write needs no extra
    call, a passing review always changes the profile it ran against: for a
    test or dry run, use a scratch profile, not a writer's real one.
 
