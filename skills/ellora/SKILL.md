@@ -217,8 +217,8 @@ also lives on the server as the `ellora_review_loop` MCP prompt.
    `ready_to_verify`, or `diminishing_returns`; `next_action` is the imperative
    summary (and may name open blue suggestions). Follow `next_action`:
    - `keep_rewriting` → open mandatory findings and/or a failed verification
-     with passes left. The response includes `rewrite_guidance` (mandatory
-     Red/Yellow only). Go to step 7. **Do not show the draft to the user yet.**
+     with passes left. The response includes `rewrite_guidance`. Go to step 7.
+     **Do not show the draft to the user yet.**
    - `ready_to_verify` → no mandatory findings remain. On the session's first
      review, `next_action` says deliver as-is. On later reviews, this response
      includes `verification` — deliver when `verification.passed` is `true`. When

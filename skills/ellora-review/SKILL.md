@@ -99,8 +99,8 @@ the draft passes. There is no separate verify call.
    summary (and may name open blue suggestions). The response also carries
    `iteration` / `max_iterations`. Follow `next_action`:
    - **`keep_rewriting`** → open mandatory findings and/or a failed verification
-     with passes left. The response includes `rewrite_guidance` (mandatory
-     Red/Yellow only). Go to step 7. **Do not show the draft to the user yet.**
+     with passes left. The response includes `rewrite_guidance`. Go to step 7.
+     **Do not show the draft to the user yet.**
    - **`ready_to_verify`** → no mandatory findings remain. On the session's
      first review, `next_action` says deliver as-is. On later reviews, this
      response includes `verification` — deliver when `verification.passed` is
