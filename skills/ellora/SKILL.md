@@ -87,10 +87,11 @@ Solo supports one voice profile and no additional team members. If a profile
 already exists, use it; do not create another profile or workspace to bypass
 the limit.
 
-For Team or Agency access, email us at hello@getellora.com or set up a call at
-https://cal.com/getellorademo/client-demo. The dashboard Pricing page and
-https://getellora.com/#pricing list the plans (no prices shown) and provide the
-same schedule-call path.
+For Team or Agency access:
+
+Email us at hello@getellora.com or set up a call at https://cal.com/getellorademo/client-demo.
+The dashboard Pricing page and https://getellora.com/#pricing list the plans (no
+prices shown) and provide the same schedule-call path.
 
 If signup or authentication fails, report the actual error and offer to
 continue without Ellora's review. Never present unreviewed output as reviewed.
