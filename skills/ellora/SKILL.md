@@ -82,8 +82,8 @@ before verification succeeds. If they already have an account, this signs them i
 without changing their plan or creating another workspace.
 
 Once signed in, continue with State 2 to connect their LLM app through OAuth.
-The Free plan supports one voice profile and no additional team members. If a profile
-already exists, use it; do not create another profile or workspace to bypass
+The Free plan supports one voice profile and no additional team members. If a
+profile already exists, use it; do not create another profile or workspace to bypass
 the limit.
 
 For Team access:
@@ -275,8 +275,8 @@ Prompts: `ellora_review_loop`.
    without Ellora. Do not describe a finding, a score, or a `passed` verdict you
    did not get back from `ellora_review`.
 2. **Don't route around access or plan limits.** Signup requires accepting the
-   terms and verifying the email; connection requires OAuth. The Free plan permits one voice profile
-   and no team members. See the dashboard Pricing page or
+   terms and verifying the email; connection requires OAuth. The Free plan
+   permits one voice profile and no team members. See the dashboard Pricing page or
    https://getellora.com/#pricing for Team plans (listed without
    prices). Email us at hello@getellora.com or set up a call at
    https://cal.com/getellorademo/client-demo.
