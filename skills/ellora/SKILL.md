@@ -223,10 +223,7 @@ also lives on the server as the `ellora_review_loop` MCP prompt.
      **Do not show the draft to the user yet.**
    - `ready_to_verify` → no mandatory findings remain. On the session's first
      review, `next_action` says deliver as-is. On later reviews, this response
-     includes `verification` — deliver when `verification.passed` is `true`. When
-     `verification.passed` is `false`, the server updates
-     `convergence_recommendation` and `next_action` for that failure; follow the
-     updated `next_action` and do not resubmit the same text unchanged.
+     includes `verification` — deliver when `verification.passed` is `true`.
    - `diminishing_returns` → mandatory findings stalled, you hit
      `max_iterations`, or verification failed on the last allowed pass. Stop
      looping. Tell the user what is still wrong and ask how to proceed.
@@ -249,10 +246,9 @@ also lives on the server as the `ellora_review_loop` MCP prompt.
    against a saved profile a `learning_event`. There is no separate verify call
    to make. A failed verify sets `convergence_recommendation` to `keep_rewriting`
    (with `rewrite_guidance`) until the pass limit, then `diminishing_returns`
-   without `rewrite_guidance` — follow `next_action` in either case. That
-   learning write happens without any extra call, so a passing review always
-   changes the profile it ran against. For a test or dry run, use a scratch
-   profile, not a writer's real one.
+   without `rewrite_guidance` — follow `next_action` in either case. A passing
+   review against a saved profile changes that profile. For a test or dry run,
+   use a scratch profile, not a writer's real one.
 9. **Teach the profile only on explicit approval.** If the user accepts the
    delivered rewrite *and* approves the rules you extracted from it, call
    `ellora_learn_from_accepted_rewrite` with `user_approved: true`. Never on

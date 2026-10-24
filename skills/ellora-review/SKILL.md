@@ -104,9 +104,7 @@ the draft passes. There is no separate verify call.
    - **`ready_to_verify`** → no mandatory findings remain. On the session's
      first review, `next_action` says deliver as-is. On later reviews, this
      response includes `verification` — deliver when `verification.passed` is
-     `true`. When `verification.passed` is `false`, the server updates
-     `convergence_recommendation` and `next_action` for that failure; follow
-     the updated `next_action` and do not resubmit the same text unchanged.
+     `true`.
    - **`diminishing_returns`** → mandatory findings stalled, you hit
      `max_iterations`, or verification failed on the last allowed pass. Stop
      looping. Tell the user what is still wrong and ask how to proceed.
@@ -139,9 +137,9 @@ the draft passes. There is no separate verify call.
    `verification.passed: true`. A failed verify sets `convergence_recommendation`
    to `keep_rewriting` (with `rewrite_guidance`) until the pass limit, then
    `diminishing_returns` without `rewrite_guidance` — follow `next_action` in
-   either case. Because that learning write needs no extra
-   call, a passing review always changes the profile it ran against: for a
-   test or dry run, use a scratch profile, not a writer's real one.
+   either case. That learning write needs no extra call. A passing review
+   against a saved profile changes that profile: for a test or dry run, use a
+   scratch profile, not a writer's real one.
 
 9. **Teach the profile only on explicit approval.** If the user accepts the
    delivered rewrite AND approves one or more concise rules you extracted
