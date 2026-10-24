@@ -93,29 +93,36 @@ the draft passes. There is no separate verify call.
 5. **Review.** Call `ellora_review` with the `content_session_id` and the
    current draft as `content`.
 
-6. **Do what `next_action` says.** The response carries
-   `convergence_recommendation`, `iteration` / `max_iterations`, and a
-   plain-language `next_action`. Follow it:
-   - **`keep_rewriting`** → go to step 7. **Do not show the draft to the
-     user yet.** You are mid-loop.
-   - **`ready_to_verify`** → no mandatory finding remains. **This same
-     response** already includes the `verification` block (step 8) — do not
-     run another pass just to get verified. If this was the session's very
-     first call there is nothing to compare against yet: treat it like
-     `keep_rewriting` if findings remain, or deliver as-is if there are none.
-   - **`diminishing_returns`** → the rewrites have stopped helping, or you
-     have hit `max_iterations`. Stop looping on your own. Tell the user
-     exactly what is still flagged and ask how they want to proceed (ship
-     as-is / keep going / adjust the voice profile or brief).
+6. **Read `convergence_recommendation`, then do what `next_action` says.**
+   Separate fields: `convergence_recommendation` is `keep_rewriting`,
+   `ready_to_verify`, or `diminishing_returns`; `next_action` is the imperative
+   summary (and may name open blue suggestions). The response also carries
+   `iteration` / `max_iterations`. Follow `next_action`:
+   - **`keep_rewriting`** → open mandatory findings and/or a failed verification
+     with passes left. The response includes `rewrite_guidance`. Go to step 7.
+     **Do not show the draft to the user yet.**
+   - **`ready_to_verify`** → no mandatory findings remain. On the session's
+     first review, `next_action` says deliver as-is. On later reviews, this
+     response includes `verification` — deliver when `verification.passed` is
+     `true`.
+   - **`diminishing_returns`** → mandatory findings stalled, you hit
+     `max_iterations`, or verification failed on the last allowed pass. Stop
+     looping. Tell the user what is still wrong and ask how to proceed.
 
-   **Blue findings never gate.** Severity `blue` (counted separately in
-   `current_finding_counts.blue`) are optional AI-Editor suggestions: they
-   never make `next_action` `keep_rewriting` and are never a reason to run
-   another pass. Apply or ignore them as you see fit.
+   **Blue findings never gate.** Optional suggestions in
+   `current_finding_counts.blue`. They never change `convergence_recommendation`,
+   never appear in `rewrite_guidance`'s edit scope, and never require another
+   pass on their own. Read `next_action` for open blue notes; apply or ignore.
 
-7. **Rewrite, then re-review.** Use the response's own `rewrite_guidance`
-   field to rewrite the content yourself, then **go back to step 5** with the
-   new text and the same `content_session_id`.
+7. **Rewrite, then re-review.** When the response includes `rewrite_guidance`,
+   use it to rewrite the content yourself, then **go back to step 5** with the
+   new text and the same `content_session_id`. Send the whole revised content,
+   not only the changed sentences. **Edit scope** covers only mandatory Red/Yellow
+   findings (`rewrite_guidance` also has a Blue section). Change only the sentences
+   Edit scope names. A case-style, point-of-view, or question-rate finding covers
+   every sentence even though it is reported on sentence 1. After a failed verify
+   there is no Edit scope: restore exactly what `next_action` and
+   `verification.meaning_changes` list, and change nothing else.
 
    Keep going around 5 → 6 → 7 until step 6 sends you out of the loop. Do
    not stop early just because the draft "seems good enough" — the
@@ -127,7 +134,12 @@ the draft passes. There is no separate verify call.
    block comparing the final text against the session's original content —
    and, on success against a saved profile, a `learning_event`. There is no
    separate verify call to make. Stop and deliver once you see
-   `verification.passed: true`.
+   `verification.passed: true`. A failed verify sets `convergence_recommendation`
+   to `keep_rewriting` (with `rewrite_guidance`) until the pass limit, then
+   `diminishing_returns` without `rewrite_guidance` — follow `next_action` in
+   either case. That learning write needs no extra call. A passing review
+   against a saved profile changes that profile: for a test or dry run, use a
+   scratch profile, not a writer's real one.
 
 9. **Teach the profile only on explicit approval.** If the user accepts the
    delivered rewrite AND approves one or more concise rules you extracted
