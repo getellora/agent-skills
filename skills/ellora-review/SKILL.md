@@ -119,9 +119,12 @@ the draft passes. There is no separate verify call.
 7. **Rewrite, then re-review.** When the response includes `rewrite_guidance`,
    use it to rewrite the content yourself, then **go back to step 5** with the
    new text and the same `content_session_id`. Send the whole revised content,
-   not only the changed sentences, and change only the sentences the
-   guidance's **Edit scope** names. A case-style or point-of-view finding
-   covers every sentence even though it is reported on sentence 1.
+   not only the changed sentences. **Edit scope** covers only mandatory Red/Yellow
+   findings (`rewrite_guidance` also has a Blue section). Change only the sentences
+   Edit scope names. A case-style, point-of-view, or question-rate finding covers
+   every sentence even though it is reported on sentence 1. After a failed verify
+   there is no Edit scope: restore exactly what `next_action` and
+   `verification.meaning_changes` list, and change nothing else.
 
    Keep going around 5 → 6 → 7 until step 6 sends you out of the loop. Do
    not stop early just because the draft "seems good enough" — the

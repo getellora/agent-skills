@@ -218,8 +218,7 @@ also lives on the server as the `ellora_review_loop` MCP prompt.
    summary (and may name open blue suggestions). Follow `next_action`:
    - `keep_rewriting` → open mandatory findings and/or a failed verification
      with passes left. The response includes `rewrite_guidance` (mandatory
-     Red/Yellow only). Rewrite, then go back to step 5 with the same
-     `content_session_id`. **Do not show the draft to the user yet.**
+     Red/Yellow only). Go to step 7. **Do not show the draft to the user yet.**
    - `ready_to_verify` → no mandatory findings remain. On the session's first
      review, `next_action` says deliver as-is. On later reviews, this response
      includes `verification` — deliver when `verification.passed` is `true`. When
@@ -234,7 +233,16 @@ also lives on the server as the `ellora_review_loop` MCP prompt.
    `current_finding_counts.blue`. They never change `convergence_recommendation`,
    never appear in `rewrite_guidance`'s edit scope, and never require another
    pass on their own. Read `next_action` for open blue notes; apply or ignore.
-7. **Verification and learning are automatic.** A passing call that isn't the
+7. **Rewrite, then re-review.** When the response includes `rewrite_guidance`,
+   use it to rewrite the content yourself, then **go back to step 5** with the
+   new text and the same `content_session_id`. Send the whole revised content,
+   not only the changed sentences. **Edit scope** covers only mandatory Red/Yellow
+   findings (`rewrite_guidance` also has a Blue section). Change only the sentences
+   Edit scope names. A case-style, point-of-view, or question-rate finding covers
+   every sentence even though it is reported on sentence 1. After a failed verify
+   there is no Edit scope: restore exactly what `next_action` and
+   `verification.meaning_changes` list, and change nothing else.
+8. **Verification and learning are automatic.** A passing call that isn't the
    session's first already carries the `verification` block, and on success
    against a saved profile a `learning_event`. There is no separate verify call
    to make. A failed verify sets `convergence_recommendation` to `keep_rewriting`
@@ -243,7 +251,7 @@ also lives on the server as the `ellora_review_loop` MCP prompt.
    learning write happens without any extra call, so a passing review always
    changes the profile it ran against. For a test or dry run, use a scratch
    profile, not a writer's real one.
-8. **Teach the profile only on explicit approval.** If the user accepts the
+9. **Teach the profile only on explicit approval.** If the user accepts the
    delivered rewrite *and* approves the rules you extracted from it, call
    `ellora_learn_from_accepted_rewrite` with `user_approved: true`. Never on
    your own inference.
