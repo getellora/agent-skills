@@ -44,7 +44,6 @@ include team members. Accounts created before Solo launched keep their
 Team plan.
 
 **Team** is for in-house teams that need more voice profiles and members.
-**Agency** is for agencies managing multiple client workspaces.
 
 Email us at hello@getellora.com or set up a call at https://cal.com/getellorademo/client-demo.
 The dashboard Pricing page and https://getellora.com/#pricing list the plans (no
@@ -87,7 +86,7 @@ Solo supports one voice profile and no additional team members. If a profile
 already exists, use it; do not create another profile or workspace to bypass
 the limit.
 
-For Team or Agency access:
+For Team access:
 
 Email us at hello@getellora.com or set up a call at https://cal.com/getellorademo/client-demo.
 The dashboard Pricing page and https://getellora.com/#pricing list the plans (no
@@ -278,7 +277,7 @@ Prompts: `ellora_review_loop`.
 2. **Don't route around access or plan limits.** Signup requires accepting the
    terms and verifying the email; connection requires OAuth. Solo permits one voice profile
    and no team members. See the dashboard Pricing page or
-   https://getellora.com/#pricing for Team and Agency plans (listed without
+   https://getellora.com/#pricing for Team plans (listed without
    prices). Email us at hello@getellora.com or set up a call at
    https://cal.com/getellorademo/client-demo.
 3. **Don't show unreviewed drafts as reviewed**, and don't claim a piece passed
