@@ -9,11 +9,11 @@ This repository holds the skills that teach an agent to connect to Ellora and ru
 | MCP server | `https://api.getellora.com/v1/external/mcp` (remote HTTP, OAuth, no API key) |
 | Skills | [`skills/ellora`](skills/ellora/SKILL.md) connects and runs the loop. [`skills/ellora-review`](skills/ellora-review/SKILL.md) is the full loop procedure. |
 | Claude Code plugin | marketplace `getellora`, plugin `ellora`. Bundles the MCP server and both skills. |
-| Account | https://app.getellora.com/register (free Solo plan) |
+| Account | https://app.getellora.com/register (**Create account** on the Free plan) |
 
 ## Install
 
-Every path below needs a free Solo account at https://app.getellora.com/register. Sign up with your email, accept the terms, and enter the code you receive. The first time your client calls Ellora, it opens a browser window where you sign in and approve the connection. There is no API key.
+Every path below needs a Free plan account at https://app.getellora.com/register. Use **Create account**, enter your email, accept the terms, and enter the code you receive. The first time your client calls Ellora, it opens a browser window where you sign in and approve the connection. There is no API key.
 
 ### Claude Code: plugin with skills and the MCP server
 
