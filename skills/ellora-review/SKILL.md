@@ -98,7 +98,7 @@ the draft passes. There is no separate verify call.
    `ready_to_verify`, or `diminishing_returns`; `next_action` is the imperative
    summary (and may name open blue suggestions). The response also carries
    `iteration` / `max_iterations`. Follow `next_action`:
-   - **`keep_rewriting`** → open mandatory findings and/or a failed verification
+   - `keep_rewriting` → open mandatory findings and/or a failed verification
      with passes left. The response includes `rewrite_guidance`. Go to step 7.
      **Do not show the draft to the user yet.**
    - **`ready_to_verify`** → no mandatory findings remain. On the session's
