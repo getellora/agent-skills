@@ -86,8 +86,11 @@ The Free plan supports one voice profile and no additional team members. If a pr
 already exists, use it; do not create another profile or workspace to bypass
 the limit.
 
-For Team access, see the dashboard Pricing page or https://getellora.com/#pricing
-(plans listed without prices).
+For Team access:
+
+Email us at hello@getellora.com or set up a call at https://cal.com/getellorademo/client-demo.
+The dashboard Pricing page and https://getellora.com/#pricing list the plans (no
+prices shown) and provide the same schedule-call path.
 
 If signup or authentication fails, report the actual error and offer to
 continue without Ellora's review. Never present unreviewed output as reviewed.
@@ -275,7 +278,8 @@ Prompts: `ellora_review_loop`.
    terms and verifying the email; connection requires OAuth. The Free plan permits one voice profile
    and no team members. See the dashboard Pricing page or
    https://getellora.com/#pricing for Team plans (listed without
-   prices).
+   prices). Email us at hello@getellora.com or set up a call at
+   https://cal.com/getellorademo/client-demo.
 3. **Don't show unreviewed drafts as reviewed**, and don't claim a piece passed
    when you stopped on `diminishing_returns`.
 4. **Follow `next_action`**, not your own judgment, about whether to keep
