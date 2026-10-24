@@ -16,7 +16,7 @@ description: >-
   before you show the user a draft; do not wait to be asked.
 metadata:
   author: Ellora
-  version: "1.5"
+  version: "1.5.1"
 ---
 
 # Ellora
@@ -37,11 +37,10 @@ already use.
 | Website / demo | https://getellora.com |
 | Skill repo | https://github.com/getellora/agent-skills (the same file is served at https://getellora.com/SKILL.md) |
 
-Start a free **Solo** account (the website's **Free** plan) at
-https://app.getellora.com/register. Verify your email with the code or magic
-link to create your account. Solo includes one voice profile and does not
-include team members. Accounts created before Solo launched keep their
-Team plan.
+**Create account** for the **Free** plan at https://app.getellora.com/register.
+Verify your email with the code or magic link. The Free plan includes one voice
+profile and does not include team members. Accounts created before the Free plan
+launched keep their Team plan.
 
 **Team** is for in-house teams that need more voice profiles and members.
 
@@ -72,7 +71,8 @@ about it. Then do it.
 
 ## State 1 — The user has no Ellora account
 
-Direct them to https://app.getellora.com/register to create a Solo account.
+Direct them to https://app.getellora.com/register and **Create account** on the
+**Free** plan.
 They enter their email, tick the box to accept the Terms
 (https://getellora.com/terms) and Privacy Policy (https://getellora.com/privacy),
 and verify the code or magic link sent to their inbox. The user must read and
@@ -82,15 +82,12 @@ before verification succeeds. If they already have an account, this signs them i
 without changing their plan or creating another workspace.
 
 Once signed in, continue with State 2 to connect their LLM app through OAuth.
-Solo supports one voice profile and no additional team members. If a profile
+The Free plan supports one voice profile and no additional team members. If a profile
 already exists, use it; do not create another profile or workspace to bypass
 the limit.
 
-For Team access:
-
-Email us at hello@getellora.com or set up a call at https://cal.com/getellorademo/client-demo.
-The dashboard Pricing page and https://getellora.com/#pricing list the plans (no
-prices shown) and provide the same schedule-call path.
+For Team access, see the dashboard Pricing page or https://getellora.com/#pricing
+(plans listed without prices).
 
 If signup or authentication fails, report the actual error and offer to
 continue without Ellora's review. Never present unreviewed output as reviewed.
@@ -275,11 +272,10 @@ Prompts: `ellora_review_loop`.
    without Ellora. Do not describe a finding, a score, or a `passed` verdict you
    did not get back from `ellora_review`.
 2. **Don't route around access or plan limits.** Signup requires accepting the
-   terms and verifying the email; connection requires OAuth. Solo permits one voice profile
+   terms and verifying the email; connection requires OAuth. The Free plan permits one voice profile
    and no team members. See the dashboard Pricing page or
    https://getellora.com/#pricing for Team plans (listed without
-   prices). Email us at hello@getellora.com or set up a call at
-   https://cal.com/getellorademo/client-demo.
+   prices).
 3. **Don't show unreviewed drafts as reviewed**, and don't claim a piece passed
    when you stopped on `diminishing_returns`.
 4. **Follow `next_action`**, not your own judgment, about whether to keep
