@@ -213,35 +213,36 @@ also lives on the server as the `ellora_review_loop` MCP prompt.
    are already locked into the session. `content` is capped at 100,000
    characters, so split anything longer into successive pieces.
 6. **Read `convergence_recommendation`, then do what `next_action` says.**
-   `next_action` is a plain-language instruction; `convergence_recommendation`
-   is the enum it is built from:
-   - `keep_rewriting` → rewrite using the response's own `rewrite_guidance`,
-     then go back to step 5 with the same `content_session_id`. **Do not show
-     the draft to the user yet** — you are mid-loop.
+   These are separate fields. `convergence_recommendation` is the enum
+   (`keep_rewriting`, `ready_to_verify`, `diminishing_returns`).
+   `next_action` is plain language built from it. Follow `next_action`:
+   - `keep_rewriting` → rewrite using `rewrite_guidance` when the response
+     includes it, then go back to step 5 with the same `content_session_id`.
+     **Do not show the draft to the user yet** — you are mid-loop.
    - `ready_to_verify` → no mandatory finding remains. On the session's
      first call, `next_action` says so and the draft can be delivered as-is.
      On any later call, *this same response* carries a `verification` block
      comparing the content against the session's first-reviewed content.
      Don't run another pass just to get verified. Deliver once
-     `verification.passed: true`. Rewrite with `rewrite_guidance` only when the
-     response includes it; it is omitted on a pass.
+     `verification.passed: true`. If `verification.passed` is `false`, follow
+     `next_action` and loop again (rewrite with `rewrite_guidance` only when
+     that field is present).
    - `diminishing_returns` → the rewrites stopped helping, or you hit
      `max_iterations`. Stop looping, tell the user exactly what is still
      flagged, and ask how to proceed.
 
-   **Blue findings never gate.** Severity `blue` (counted separately in
-   `current_finding_counts.blue`) are optional AI-Editor suggestions: they
-   never make `next_action` `keep_rewriting` and are never a reason to run
-   another pass. Apply or ignore them as you see fit, but they are often real
-   tells ("here's the thing", "honestly?"), so read them before you deliver.
-   If you apply any, call `ellora_review` once more with the edited text so the
-   version you deliver is the version Ellora checked.
+   **Blue findings never gate.** Optional AI-Editor suggestions in
+   `current_finding_counts.blue`. They never set `convergence_recommendation`
+   to `keep_rewriting` and never require another pass. Read them before you
+   deliver; apply or ignore as you see fit.
 7. **Verification and learning are automatic.** A passing call that isn't the
    session's first already carries the `verification` block, and on success
    against a saved profile a `learning_event`. There is no separate verify call
-   to make. That learning write happens without any extra call, so a passing
-   review always changes the profile it ran against. For a test or dry run,
-   use a scratch profile, not a writer's real one.
+   to make. When verification fails, follow `next_action`; `rewrite_guidance` is
+   only included when the post-verification step sets `convergence_recommendation`
+   to `keep_rewriting`, so handle a missing field. That learning write happens
+   without any extra call, so a passing review always changes the profile it ran
+   against. For a test or dry run, use a scratch profile, not a writer's real one.
 8. **Teach the profile only on explicit approval.** If the user accepts the
    delivered rewrite *and* approves the rules you extracted from it, call
    `ellora_learn_from_accepted_rewrite` with `user_approved: true`. Never on
