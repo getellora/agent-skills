@@ -124,8 +124,19 @@ entry to the client's MCP settings, then restart it.
 }
 ```
 
-VS Code needs `"type": "http"` instead of `streamableHttp`, under a `servers`
-key instead of `mcpServers`.
+**VS Code** needs its own shape: `"type": "http"` (not `streamableHttp`),
+under a `servers` key instead of `mcpServers`:
+
+```json
+{
+  "servers": {
+    "ellora": {
+      "type": "http",
+      "url": "https://api.getellora.com/v1/external/mcp"
+    }
+  }
+}
+```
 
 Claude Code can instead install the Ellora plugin, which adds this server and
 this skill together: `claude plugin marketplace add getellora/agent-skills`,
