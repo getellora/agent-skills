@@ -90,14 +90,15 @@ Add a remote HTTP (Streamable HTTP) server named `ellora`:
 {
   "mcpServers": {
     "ellora": {
-      "type": "http",
+      "type": "streamableHttp",
       "url": "https://api.getellora.com/v1/external/mcp"
     }
   }
 }
 ```
 
-VS Code uses the same entry under a `servers` key instead of `mcpServers`.
+VS Code needs `"type": "http"` instead of `streamableHttp`, under a `servers`
+key instead of `mcpServers` — see VS Code above.
 
 ### Skills only, for any agent that reads skills from GitHub
 
@@ -129,6 +130,11 @@ Ellora's privacy policy is at https://getellora.com/privacy/ and its terms are a
 | `plugin.json`, `mcp.json`, `assets/` | The ChatGPT plugin directory (Agent Plugins format, with `extensions.com.openai`) |
 | `server.json` | The official MCP Registry, published by `.github/workflows/publish-mcp-registry.yml` as `io.github.getellora/ellora` |
 | `skills/` | Every client above |
+
+Every copy-paste config above uses `streamableHttp`, the spelling Cline
+requires. `.mcp.json`'s `type` stays `http` (the value Claude Code's docs
+show for this transport), and `mcp.json` and `server.json` keep
+`streamable-http` (the exact value their own schemas require).
 
 ## What the skill does
 
