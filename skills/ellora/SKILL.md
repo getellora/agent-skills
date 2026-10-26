@@ -16,7 +16,7 @@ description: >-
   before you show the user a draft; do not wait to be asked.
 metadata:
   author: Ellora
-  version: "1.5.1"
+  version: "1.5.2"
 ---
 
 # Ellora

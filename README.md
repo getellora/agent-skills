@@ -41,6 +41,19 @@ Open this link, or run **MCP: Add Server** and choose HTTP:
 
 `vscode:mcp/install?%7B%22name%22%3A%22ellora%22%2C%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A//api.getellora.com/v1/external/mcp%22%7D`
 
+Or add this to `.vscode/mcp.json`, under a `servers` key instead of `mcpServers`:
+
+```json
+{
+  "servers": {
+    "ellora": {
+      "type": "http",
+      "url": "https://api.getellora.com/v1/external/mcp"
+    }
+  }
+}
+```
+
 ### Codex
 
 ```bash
@@ -98,7 +111,7 @@ Add a remote HTTP (Streamable HTTP) server named `ellora`:
 ```
 
 VS Code needs `"type": "http"` instead of `streamableHttp`, under a `servers`
-key instead of `mcpServers` — see VS Code above.
+key instead of `mcpServers` — see the VS Code JSON block above.
 
 ### Skills only, for any agent that reads skills from GitHub
 
@@ -131,10 +144,11 @@ Ellora's privacy policy is at https://getellora.com/privacy/ and its terms are a
 | `server.json` | The official MCP Registry, published by `.github/workflows/publish-mcp-registry.yml` as `io.github.getellora/ellora` |
 | `skills/` | Every client above |
 
-Every copy-paste config above uses `streamableHttp`, the spelling Cline
-requires. `.mcp.json`'s `type` stays `http` (the value Claude Code's docs
-show for this transport), and `mcp.json` and `server.json` keep
-`streamable-http` (the exact value their own schemas require).
+Every `mcpServers` copy-paste block above uses `streamableHttp`, the spelling
+Cline requires — except VS Code, which needs `http` under a `servers` key
+(see VS Code above). `.mcp.json`'s `type` also stays `http` (the value
+Claude Code's docs show for this transport), and `mcp.json` and `server.json`
+keep `streamable-http` (the exact value their own schemas require).
 
 ## What the skill does
 
