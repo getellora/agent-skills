@@ -65,6 +65,23 @@ Then run `/mcp auth ellora` inside Gemini CLI.
 
 Until the ChatGPT directory listing is live, add Ellora as a custom connector with the server URL. Your workspace may need developer mode turned on for custom connectors.
 
+### Cline
+
+Cline needs `streamableHttp` because it rejects `"type": "http"`. Add this to your Cline MCP settings:
+
+```json
+{
+  "mcpServers": {
+    "ellora": {
+      "type": "streamableHttp",
+      "url": "https://api.getellora.com/v1/external/mcp"
+    }
+  }
+}
+```
+
+On first connect, Cline shows **Authenticate**, which opens Ellora's sign-in (email code) and then the consent screen.
+
 ### Any other MCP client
 
 Add a remote HTTP (Streamable HTTP) server named `ellora`:
