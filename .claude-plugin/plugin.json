@@ -1,7 +1,7 @@
 {
   "name": "ellora",
   "displayName": "Ellora",
-  "version": "1.5.2",
+  "version": "1.6.0",
   "description": "Brand-voice QA, desloping, and writing-brief review for everything your agent writes. Registers the hosted Ellora MCP server and runs the review loop before a draft is shown.",
   "author": {
     "name": "Ellora",

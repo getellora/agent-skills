@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "ellora",
-  "version": "1.5.2",
+  "version": "1.6.0",
   "description": "Brand-voice QA, desloping, and writing-brief review for everything your agent writes. Connects the hosted Ellora MCP server and runs the review loop before a draft is shown.",
   "author": {
     "name": "Ellora",
