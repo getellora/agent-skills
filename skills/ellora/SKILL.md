@@ -264,9 +264,10 @@ also lives on the server as the `ellora_review_loop` MCP prompt.
    top-level `passed` to `false`. `convergence_recommendation` becomes
    `keep_rewriting` (with `rewrite_guidance`) until the pass limit, then
    `diminishing_returns` without `rewrite_guidance`. Follow `next_action` in
-   either case. A passing
-   review against a saved profile changes that profile. For a test or dry run,
-   use a scratch profile, not a writer's real one.
+   either case. `learning_event` is `recorded`, or `nothing_to_learn` when the
+   pass resolved no findings or repeats an earlier result. A recorded event
+   does not edit the profile. It feeds later rewrite guidance for that profile,
+   so for a test or dry run, use a scratch profile, not a writer's real one.
 9. **Teach the profile only on explicit approval.** If the user accepts the
    delivered rewrite *and* approves the rules you extracted from it, call
    `ellora_learn_from_accepted_rewrite` with `user_approved: true`. Never on
