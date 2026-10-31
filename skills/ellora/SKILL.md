@@ -234,8 +234,10 @@ also lives on the server as the `ellora_review_loop` MCP prompt.
      with passes left. The response includes `rewrite_guidance`. Go to step 7.
      **Do not show the draft to the user yet.**
    - `ready_to_verify` → no mandatory findings remain. On the session's first
-     review, `next_action` says deliver as-is. On later reviews, this response
-     includes `verification` — deliver when `verification.passed` is `true`.
+     review, `next_action` says deliver as-is. On later reviews, this
+     response includes `verification` — deliver when `verification.passed` is
+     `true`. If a judgment-required finding is open, `next_action` names it:
+     get a human decision before you deliver.
    - `diminishing_returns` → mandatory findings stalled, you hit
      `max_iterations`, or verification failed on the last allowed pass. Stop
      looping. Tell the user what is still wrong and ask how to proceed.
@@ -251,14 +253,18 @@ also lives on the server as the `ellora_review_loop` MCP prompt.
    findings (`rewrite_guidance` also has a Blue section). Change only the sentences
    Edit scope names. A case-style, point-of-view, or question-rate finding covers
    every sentence even though it is reported on sentence 1. After a failed verify
-   there is no Edit scope: restore exactly what `next_action` and
-   `verification.meaning_changes` list, and change nothing else.
+   there is no Edit scope. `next_action` names what failed, and
+   `verification.meaning_changes` and `verification.lost_key_words` give the
+   detail. Put those facts back without restoring phrasing the first review
+   flagged, and change nothing else.
 8. **Verification and learning are automatic.** A passing call that isn't the
    session's first already carries the `verification` block, and on success
    against a saved profile a `learning_event`. There is no separate verify call
-   to make. A failed verify sets `convergence_recommendation` to `keep_rewriting`
-   (with `rewrite_guidance`) until the pass limit, then `diminishing_returns`
-   without `rewrite_guidance` — follow `next_action` in either case. A passing
+   to make. A failed verify records no `learning_event` and sets
+   top-level `passed` to `false`. `convergence_recommendation` becomes
+   `keep_rewriting` (with `rewrite_guidance`) until the pass limit, then
+   `diminishing_returns` without `rewrite_guidance`. Follow `next_action` in
+   either case. A passing
    review against a saved profile changes that profile. For a test or dry run,
    use a scratch profile, not a writer's real one.
 9. **Teach the profile only on explicit approval.** If the user accepts the
