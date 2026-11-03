@@ -35,6 +35,40 @@ Open this link to add the server, or add the JSON entry below to `~/.cursor/mcp.
 
 `cursor://anysphere.cursor-deeplink/mcp/install?name=ellora&config=eyJ1cmwiOiJodHRwczovL2FwaS5nZXRlbGxvcmEuY29tL3YxL2V4dGVybmFsL21jcCJ9`
 
+### OpenCode
+
+Add the remote server to `opencode.json` in your project, or to
+`~/.config/opencode/opencode.json` for every project:
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "ellora": {
+      "type": "remote",
+      "url": "https://api.getellora.com/v1/external/mcp",
+      "enabled": true
+    }
+  }
+}
+```
+
+Then sign in:
+
+```bash
+opencode mcp auth ellora
+```
+
+OpenCode also loads the skill, so it runs the review loop before it shows you a
+draft. Install both skills for OpenCode:
+
+```bash
+npx skills add getellora/agent-skills -a opencode
+```
+
+That writes to `.agents/skills/` in the project; add `-g` for
+`~/.config/opencode/skills/`.
+
 ### VS Code
 
 Open this link, or run **MCP: Add Server** and choose HTTP:
@@ -119,7 +153,7 @@ key instead of `mcpServers` — see the VS Code JSON block above.
 npx skills add getellora/agent-skills
 ```
 
-This installs both skills into every supported agent it finds, including Claude Code, Cursor, Codex, Gemini CLI, Windsurf, Grok, and GitHub Copilot. Add `-g` for a user-wide install, or `--skill ellora` for the front-door skill only. To copy by hand, put `skills/ellora` in `.agents/skills/` (Codex, Cursor, Cline, Gemini CLI, GitHub Copilot), `.claude/skills/` (Claude Code), `.windsurf/skills/`, or `.grok/skills/`.
+This installs both skills into every supported agent it finds, including OpenCode, Claude Code, Cursor, Codex, Gemini CLI, Windsurf, Grok, and GitHub Copilot. Add `-g` for a user-wide install, or `--skill ellora` for the front-door skill only. To copy by hand, put `skills/ellora` in `.agents/skills/` (OpenCode, Codex, Cursor, Cline, Gemini CLI, GitHub Copilot), `.claude/skills/` (Claude Code), `.windsurf/skills/`, or `.grok/skills/`. OpenCode also reads `~/.config/opencode/skills/ellora/`.
 
 ### From the URL
 
