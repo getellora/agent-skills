@@ -16,7 +16,7 @@ description: >-
   before you show the user a draft; do not wait to be asked.
 metadata:
   author: Ellora
-  version: "1.6"
+  version: "1.6.0"
 ---
 
 # Ellora
@@ -74,7 +74,7 @@ about it. Then do it.
 Direct them to https://app.getellora.com/register and **Create account** on the
 **Free** plan.
 They enter their email, tick the box to accept the Terms
-(https://getellora.com/terms) and Privacy Policy (https://getellora.com/privacy),
+(https://getellora.com/terms/) and Privacy Policy (https://getellora.com/privacy/),
 and verify the code or magic link sent to their inbox. The user must read and
 accept the terms themselves: never tick the box, accept, or sign up on their
 behalf. Do not ask them to share the code in chat or claim the account exists
@@ -110,6 +110,24 @@ client you are running in.
 | Command Code | `cmd mcp add --transport http ellora https://api.getellora.com/v1/external/mcp` |
 | Claude Code | `claude mcp add --transport http ellora https://api.getellora.com/v1/external/mcp` |
 
+**OpenCode** uses its own `mcp` block, not `mcpServers`:
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "ellora": {
+      "type": "remote",
+      "url": "https://api.getellora.com/v1/external/mcp"
+    }
+  }
+}
+```
+
+Put that in `opencode.json` in the project, or in
+`~/.config/opencode/opencode.json` for every project. Then run
+`opencode mcp auth ellora`.
+
 **Config-file clients** (Cursor, Windsurf, Cline, and most others): add this
 entry to the client's MCP settings, then restart it.
 
@@ -143,6 +161,11 @@ this skill together: `claude plugin marketplace add getellora/agent-skills`,
 then `claude plugin install ellora@getellora`. A server added that way is
 listed as `plugin:ellora:ellora`.
 
+OpenCode can load the same skill from this repository: run
+`npx skills add getellora/agent-skills -a opencode` (add `-g` for a global
+install), or copy `skills/ellora` to `.agents/skills/ellora/` or
+`~/.config/opencode/skills/ellora/`.
+
 **Hosted chat clients** (ChatGPT, Claude Desktop, claude.ai, Perplexity, and
 similar): open the client's connector/MCP settings, choose to add a **custom
 remote connector**, and give it the URL above. No headers, no keys.
@@ -160,6 +183,7 @@ curl it into place.
 - Claude Code: run `/mcp` and authenticate `ellora`. A server you added with
   `claude mcp add` also accepts `claude mcp login ellora`; one installed
   through the Ellora plugin is listed as `plugin:ellora:ellora`, so use `/mcp`.
+- OpenCode: `opencode mcp auth ellora`, or run `/mcp` and authenticate.
 - Other clients: trigger a connect/authenticate action and follow the browser
   prompt.
 
@@ -167,8 +191,8 @@ A browser opens on `app.getellora.com`. The user signs in and approves the
 connection; tokens are then stored and refreshed by the client. If no browser
 opens, print the URL and have them open it manually, then paste the callback
 URL back. Verify afterwards (re-run the check from "First", or
-`cmd mcp list` / `/mcp`) that the server shows **connected**, not
-*needs authentication*.
+`cmd mcp list` / `/mcp` / `opencode mcp list`) that the server shows
+**connected**, not *needs authentication*.
 
 **If the user has no account**, go to State 1 to register. If an existing
 account cannot sign in, report the error and direct them to
