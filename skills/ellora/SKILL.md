@@ -16,7 +16,7 @@ description: >-
   before you show the user a draft; do not wait to be asked.
 metadata:
   author: Ellora
-  version: "1.5.3"
+  version: "1.5.4"
 ---
 
 # Ellora
@@ -74,7 +74,7 @@ about it. Then do it.
 Direct them to https://app.getellora.com/register and **Create account** on the
 **Free** plan.
 They enter their email, tick the box to accept the Terms
-(https://getellora.com/terms) and Privacy Policy (https://getellora.com/privacy),
+(https://getellora.com/terms/) and Privacy Policy (https://getellora.com/privacy/),
 and verify the code or magic link sent to their inbox. The user must read and
 accept the terms themselves: never tick the box, accept, or sign up on their
 behalf. Do not ask them to share the code in chat or claim the account exists
