@@ -110,7 +110,7 @@ Then run `/mcp auth ellora` inside Gemini CLI.
 
 ### ChatGPT
 
-Until the ChatGPT directory listing is live, add Ellora as a custom connector with the server URL. Your workspace may need developer mode turned on for custom connectors.
+Ellora is live in the ChatGPT plugin directory — [install it from the listing](https://chatgpt.com/plugins/plugin_asdk_app_6ad60044b6b88191b9aae935d686d193). If your workspace restricts directory installs, add Ellora as a custom connector with the server URL instead. Your workspace may need developer mode turned on for custom connectors.
 
 ### Cline
 
