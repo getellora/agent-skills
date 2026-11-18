@@ -38,9 +38,11 @@ already use.
 | Skill repo | https://github.com/getellora/agent-skills (the same file is served at https://getellora.com/SKILL.md) |
 
 **Create account** for the **Free** plan at https://app.getellora.com/register.
-Verify your email with the code or magic link. The Free plan includes one voice
-profile and does not include team members. Accounts created before the Free plan
-launched keep their Team plan.
+Verify your email with the code or magic link. Every new account starts on the
+Free plan; there is no plan to pick at sign-up. The Free plan includes one active
+voice profile, one connected AI app (MCP connection), up to 50,000 words checked
+each calendar month (UTC), one review running at a time, and no team members.
+Accounts created before the Free plan launched keep their earlier limits.
 
 **Team** is for in-house teams that need more voice profiles and members.
 
@@ -82,9 +84,11 @@ before verification succeeds. If they already have an account, this signs them i
 without changing their plan or creating another workspace.
 
 Once signed in, continue with State 2 to connect their LLM app through OAuth.
-The Free plan supports one voice profile and no additional team members. If a
-profile already exists, use it; do not create another profile or workspace to bypass
-the limit.
+The Free plan supports one active voice profile, one connected AI app, 50,000 words
+checked each calendar month (UTC), one review running at a time, and no additional
+team members. If a profile already exists, use it; do not create another profile or
+workspace to bypass the limit. If a review is refused because the monthly word limit
+is reached, tell the user when it resets (the error says so) instead of retrying.
 
 For Team access:
 
@@ -331,7 +335,8 @@ Prompts: `ellora_review_loop`.
    did not get back from `ellora_review`.
 2. **Don't route around access or plan limits.** Signup requires accepting the
    terms and verifying the email; connection requires OAuth. The Free plan
-   permits one voice profile and no team members. See the dashboard Pricing page or
+   permits one voice profile, one connected AI app, 50,000 words checked each
+   month, and no team members. See the dashboard Pricing page or
    https://getellora.com/#pricing for Team plans (listed without
    prices). Email us at hello@getellora.com or set up a call at
    https://cal.com/getellorademo/client-demo.
