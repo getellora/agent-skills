@@ -5,6 +5,12 @@
   </picture>
 </a>
 
+<p align="center">
+  <a href="https://getellora.com">Website</a> &nbsp;·&nbsp;
+  <a href="https://app.getellora.com/register">Create a free account</a> &nbsp;·&nbsp;
+  <a href="https://getellora.com/privacy/">Privacy</a>
+</p>
+
 ## What is Ellora?
 
 Ellora checks writing before you publish it. It is an editor that works inside the AI app you already use.
@@ -146,16 +152,14 @@ Your AI app sends the draft text to `api.getellora.com` over HTTPS. Ellora keeps
 
 ## Try Ellora
 
-The Free plan includes all four checks and one voice profile.
-
 <a href="https://app.getellora.com/register">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/readme/try-free-dark.svg">
-    <img src="assets/readme/try-free-light.svg" alt="Try the Free plan" height="56">
+    <img src="assets/readme/try-free-light.svg" alt="Try Ellora free. The Free plan includes all four checks and one voice profile. Create a free account." width="100%">
   </picture>
 </a>
 
-Questions? Write to [hello@getellora.com](mailto:hello@getellora.com).
+<p align="center">Questions? Write to <a href="mailto:hello@getellora.com">hello@getellora.com</a>.</p>
 
 ## License
 
