@@ -224,8 +224,9 @@ user's actual writing task.
 
 ## The review loop
 
-Fuller version: the `ellora-review` skill, if it is installed. Same sequence
-also lives on the server as the `ellora_review_loop` MCP prompt.
+Fuller version: the `ellora-review` skill, if it is installed. A shorter
+version lives on the server as the `ellora_review_loop` MCP prompt. Where the
+two differ, follow this skill and `next_action`.
 
 1. **Pick a voice profile** — `ellora_profiles_fetch_active`. One → use it.
    Several → ask which (teams commonly keep one per writer, or per author they
@@ -263,7 +264,8 @@ also lives on the server as the `ellora_review_loop` MCP prompt.
      with passes left. The response includes `rewrite_guidance`. Go to step 7.
      **Do not show the draft to the user yet.**
    - `ready_to_verify` → no mandatory findings remain. On the session's first
-     review, `next_action` says deliver as-is. On later reviews, this
+     review with no judgment-required finding open, `next_action` says deliver
+     as-is. On later reviews, this
      response includes `verification` — deliver when `verification.passed` is
      `true`. If a judgment-required finding is open, `next_action` names it:
      get a human decision before you deliver.

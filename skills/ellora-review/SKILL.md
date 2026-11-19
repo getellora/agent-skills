@@ -103,7 +103,8 @@ the draft passes. There is no separate verify call.
      with passes left. The response includes `rewrite_guidance`. Go to step 7.
      **Do not show the draft to the user yet.**
    - **`ready_to_verify`** → no mandatory findings remain. On the session's
-     first review, `next_action` says deliver as-is. On later reviews, this
+     first review with no judgment-required finding open, `next_action` says
+     deliver as-is. On later reviews, this
      response includes `verification` — deliver when `verification.passed` is
      `true`. If a judgment-required finding is open, `next_action` names it:
      get a human decision before you deliver.
@@ -174,6 +175,7 @@ Don't dump raw finding JSON at the user unless they ask for it.
   different voice profile / brief, means a **new** `ellora_session_start`.
 - Only `ellora_review` writes history rows (visible read-only in the Ellora
   app under Content Sessions).
-- The MCP server also exposes an `ellora_review_loop` prompt with this same
-  sequence — this skill is the fuller version, with the "keep looping" and
-  "when to use" guidance the prompt can't carry.
+- The MCP server also exposes an `ellora_review_loop` prompt with a shorter
+  version of this sequence. This skill is the fuller version, with the "keep
+  looping" and "when to use" guidance the prompt can't carry. Where the two
+  differ, follow this skill and `next_action`.
