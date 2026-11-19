@@ -17,7 +17,7 @@ description: >-
   not wait for the user to ask.
 metadata:
   author: Ellora
-  version: "1.7.0"
+  version: "1.7.1"
 ---
 
 # Ellora
@@ -146,6 +146,12 @@ Put the block in `opencode.json` in the project, or in
 `~/.config/opencode/opencode.json` for all projects. Then run
 `opencode mcp auth ellora`.
 
+**Gemini CLI** adds the server from the terminal:
+
+```bash
+gemini mcp add --transport http ellora https://api.getellora.com/v1/external/mcp
+```
+
 **Clients with a config file** (Cursor, Windsurf, Cline and most others): add
 this entry to the MCP settings, then restart the client.
 
@@ -201,6 +207,7 @@ The client must run the OAuth sign-in. You cannot do it with curl.
   `claude mcp add`, `claude mcp login ellora` also works. For a server from
   the plugin, use `/mcp`, because its name is `plugin:ellora:ellora`.
 - OpenCode: run `opencode mcp auth ellora`, or run `/mcp` and authenticate.
+- Gemini CLI: run `/mcp auth ellora`.
 - Other clients: start the connect or authenticate action and follow the
   browser.
 
