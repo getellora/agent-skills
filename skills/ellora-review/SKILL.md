@@ -93,29 +93,46 @@ the draft passes. There is no separate verify call.
 5. **Review.** Call `ellora_review` with the `content_session_id` and the
    current draft as `content`.
 
-6. **Do what `next_action` says.** The response carries
-   `convergence_recommendation`, `iteration` / `max_iterations`, and a
-   plain-language `next_action`. Follow it:
-   - **`keep_rewriting`** → go to step 7. **Do not show the draft to the
-     user yet.** You are mid-loop.
-   - **`ready_to_verify`** → no mandatory finding remains. **This same
-     response** already includes the `verification` block (step 8) — do not
-     run another pass just to get verified. If this was the session's very
-     first call there is nothing to compare against yet: treat it like
-     `keep_rewriting` if findings remain, or deliver as-is if there are none.
-   - **`diminishing_returns`** → the rewrites have stopped helping, or you
-     have hit `max_iterations`. Stop looping on your own. Tell the user
-     exactly what is still flagged and ask how they want to proceed (ship
-     as-is / keep going / adjust the voice profile or brief).
+6. **Read `convergence_recommendation`, then do what `next_action` says.**
+   Separate fields: `convergence_recommendation` is `keep_rewriting`,
+   `ready_to_verify`, or `diminishing_returns`; `next_action` is the imperative
+   summary. The response also carries `iteration` / `max_iterations`. Each
+   bullet below is one `convergence_recommendation` value. In every case,
+   follow `next_action`:
+   - **`keep_rewriting`** → open mandatory findings, or a failed verification
+     with passes left. The response includes `rewrite_guidance`. Go to step 7.
+     **Do not show the draft to the user yet.**
+   - **`ready_to_verify`** → no mandatory findings remain. On the session's
+     first review with no judgment-required finding open, `next_action` says
+     deliver as-is. On later reviews, this
+     response includes `verification` — deliver when `verification.passed` is
+     `true`. If a judgment-required finding is open, `next_action` names it:
+     get a human decision before you deliver.
+   - **`diminishing_returns`** → mandatory findings stalled, you hit
+     `max_iterations`, or verification failed on the last allowed pass. Stop
+     looping. Tell the user what is still wrong and ask how to proceed.
 
-   **Blue findings never gate.** Severity `blue` (counted separately in
-   `current_finding_counts.blue`) are optional AI-Editor suggestions: they
-   never make `next_action` `keep_rewriting` and are never a reason to run
-   another pass. Apply or ignore them as you see fit.
+   **Blue findings never gate.** Optional suggestions in
+   `current_finding_counts.blue`. They never change `convergence_recommendation`,
+   never appear in `rewrite_guidance`'s edit scope, and never require another
+   pass on their own. On a `ready_to_verify` pass, `next_action` also counts
+   open blue suggestions. Apply or ignore them.
 
-7. **Rewrite, then re-review.** Use the response's own `rewrite_guidance`
-   field to rewrite the content yourself, then **go back to step 5** with the
-   new text and the same `content_session_id`.
+7. **Rewrite, then re-review.** When the response includes `rewrite_guidance`,
+   use it to rewrite the content yourself, then **go back to step 5** with the
+   new text and the same `content_session_id`. Send the whole revised content,
+   not only the changed sentences. **Edit scope** covers only mandatory Red/Yellow
+   findings (`rewrite_guidance` also has a Blue section). Change only the sentences
+   Edit scope names. A mandatory VoiceDNA case-style, point-of-view, or
+   question-rate finding covers every sentence even though it is reported on
+   sentence 1. After a failed verify there is no Edit scope. `next_action`
+   names what failed, and
+   `verification.failure_reasons` lists every reason.
+   `verification.meaning_changes` and, when key words were lost,
+   `verification.lost_key_words` give the detail. `rewrite_guidance` then ends
+   with a "Restore the first draft's meaning" section that lists the same
+   reasons and quotes the first draft. Put those facts back without restoring
+   phrasing the first review flagged, and change nothing else.
 
    Keep going around 5 → 6 → 7 until step 6 sends you out of the loop. Do
    not stop early just because the draft "seems good enough" — the
@@ -127,13 +144,36 @@ the draft passes. There is no separate verify call.
    block comparing the final text against the session's original content —
    and, on success against a saved profile, a `learning_event`. There is no
    separate verify call to make. Stop and deliver once you see
-   `verification.passed: true`.
+   `verification.passed: true` and no judgment-required finding is open (step 6).
+   A failed verify records no `learning_event` and sets
+   top-level `passed` to `false`. `convergence_recommendation` becomes
+   `keep_rewriting` (with `rewrite_guidance`) until the pass limit, then
+   `diminishing_returns` without `rewrite_guidance`. Follow `next_action` in
+   either case. `learning_event` is `recorded`, or `nothing_to_learn` when the
+   pass resolved no findings or repeats an earlier result. A recorded event does not edit the profile. It
+   feeds later rewrite guidance for that profile, so for a test or dry run, use
+   a scratch profile, not a writer's real one.
 
-9. **Teach the profile only on explicit approval.** If the user accepts the
-   delivered rewrite AND approves one or more concise rules you extracted
-   from it, call `ellora_learn_from_accepted_rewrite` with the same
-   `content_session_id`, those rules, and `user_approved: true`. Do not call
-   it on your own inference.
+9. **Teach the profile after every accepted rewrite.** When the user accepts
+   a rewrite, call `ellora_learn_from_accepted_rewrite` with the same
+   `content_session_id`. Send both texts: `original_text` is the draft before
+   the rewrite, `accepted_text` is what the user accepted, including their own
+   edits. Add typed rules for what changed, `{type, value, scope?, evidence?}`,
+   with `type` one of `avoid_phrase`, `prefer_phrase`, `max_sentence_words`,
+   `no_opener`, `punctuation_limit`, `pov`, `question_rate_max` or
+   `freeform`. Ellora runs no model and stores only rules, never either text.
+   - Leave `user_approved` unset. The rules are then suggestions, and Ellora
+     promotes one once it recurs across sessions.
+   - Set `user_approved: true` only when the user explicitly approved the rules
+     in that call. That promotes them at once and needs a team admin: if the
+     response says `approval: "admin_required"`, tell the user the rules were
+     saved as suggestions for an admin.
+   - If the user undoes or rejects a learned rule, send its `rule_key` in
+     `rejected_rule_keys`.
+
+   A promoted structured rule comes back from `ellora_review` as a `voice_dna`
+   finding whose type starts with `learned-`: blue while advisory, yellow once
+   mandatory.
 
 ## What to tell the user at the end
 
@@ -152,6 +192,7 @@ Don't dump raw finding JSON at the user unless they ask for it.
   different voice profile / brief, means a **new** `ellora_session_start`.
 - Only `ellora_review` writes history rows (visible read-only in the Ellora
   app under Content Sessions).
-- The MCP server also exposes an `ellora_review_loop` prompt with this same
-  sequence — this skill is the fuller version, with the "keep looping" and
-  "when to use" guidance the prompt can't carry.
+- The MCP server also exposes an `ellora_review_loop` prompt with a shorter
+  version of this sequence. This skill is the fuller version, with the "keep
+  looping" and "when to use" guidance the prompt can't carry. Where the two
+  differ, follow this skill and `next_action`.
