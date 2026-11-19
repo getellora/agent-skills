@@ -1,44 +1,107 @@
-# Ellora agent skills
+<a href="https://getellora.com">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/readme/hero-dark.svg">
+    <img src="assets/readme/hero-light.svg" alt="Ellora agent skills. Your editor in chief, for every AI draft." width="100%">
+  </picture>
+</a>
 
-Ellora checks writing before it ships. It reviews a draft against the team's saved brand-voice profile (VoiceDNA), strips flat, generic AI phrasing (AI Editor), and enforces the rules in a writing brief (Editorial). It runs as a hosted MCP server, so the agent you already use does the writing and Ellora does the review.
+## What is Ellora?
 
-This repository holds the skills that teach an agent to connect to Ellora and run that review loop on every draft. The front-door skill is the same file served at https://getellora.com/SKILL.md.
+Ellora checks writing before you publish it. It is an editor that works inside the AI app you already use.
 
-| | |
+Your AI app writes the draft. Ellora reviews it and tells your AI app what to fix. Your AI app makes the fixes and asks Ellora again. When the review passes, your AI app shows you the draft.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/readme/how-it-works-dark.svg">
+  <img src="assets/readme/how-it-works-light.svg" alt="Your AI app writes a draft. Ellora reviews it. Your AI app fixes what Ellora found. You get a clean draft." width="100%">
+</picture>
+
+Each review runs four checks:
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/readme/checks-dark.svg">
+  <img src="assets/readme/checks-light.svg" alt="VoiceDNA checks that the draft sounds like you. AI Editor finds generic AI phrasing. Narrative finds contradictions and unsupported leaps. Editorial checks the draft against your writing brief." width="100%">
+</picture>
+
+## What are these agent skills?
+
+A skill is a set of instructions that your AI app reads. These two skills teach your AI app to use Ellora.
+
+| Skill | What it does |
 |---|---|
-| MCP server | `https://api.getellora.com/v1/external/mcp` (remote HTTP, OAuth, no API key) |
-| Skills | [`skills/ellora`](skills/ellora/SKILL.md) connects and runs the loop. [`skills/ellora-review`](skills/ellora-review/SKILL.md) is the full loop procedure. |
-| Claude Code plugin | marketplace `getellora`, plugin `ellora`. Bundles the MCP server and both skills. |
-| Account | https://app.getellora.com/register (**Create account** on the Free plan) |
+| [`ellora`](skills/ellora/SKILL.md) | Connects your AI app to Ellora. Then it runs a review on every draft before your AI app shows the draft to you. |
+| [`ellora-review`](skills/ellora-review/SKILL.md) | Gives the full review steps: pick a voice profile and a writing brief, review, fix, and review again. |
 
-## Install
+The skills are text files only. They run no code on your computer.
 
-Every path below needs a Free plan account at https://app.getellora.com/register. Use **Create account**, enter your email, accept the terms, and enter the code you receive. The first time your client calls Ellora, it opens a browser window where you sign in and approve the connection. There is no API key.
+## How to use them
 
-### Claude Code: plugin with skills and the MCP server
+**1. Create a free account** at [app.getellora.com/register](https://app.getellora.com/register). You need only your email address.
+
+**2. Add Ellora to your AI app.**
+
+Claude Code:
 
 ```bash
 claude plugin marketplace add getellora/agent-skills
 claude plugin install ellora@getellora
 ```
 
-The plugin registers the MCP server as `plugin:ellora:ellora` and loads both skills. Run `/mcp` inside Claude Code and authenticate that server.
+Then run `/mcp` in Claude Code and sign in to the `ellora` server.
 
-### claude.ai, Claude Desktop, and Cowork
+claude.ai, Claude Desktop and Cowork: open **Customize > Plugins > Add > Add marketplace**. Enter `getellora/agent-skills` and install **Ellora**. Then connect Ellora on the plugin's **Connectors** tab.
 
-- Plugin: open **Customize > Plugins > Add > Add marketplace**, enter `getellora/agent-skills`, and install **Ellora**. Then connect Ellora from the plugin's **Connectors** tab.
-- Connector only: open **Customize > Connectors > Add custom connector** and enter `https://api.getellora.com/v1/external/mcp`.
+ChatGPT: install Ellora from the [ChatGPT plugin directory](https://chatgpt.com/plugins/plugin_asdk_app_6ad60044b6b88191b9aae935d686d193).
 
-### Cursor
+Any other app that supports MCP: add this server, then add the skills.
 
-Open this link to add the server, or add the JSON entry below to `~/.cursor/mcp.json`:
+```json
+{
+  "mcpServers": {
+    "ellora": {
+      "type": "streamableHttp",
+      "url": "https://api.getellora.com/v1/external/mcp"
+    }
+  }
+}
+```
+
+```bash
+npx skills add getellora/agent-skills
+```
+
+<details>
+<summary>Steps for Cursor, VS Code, Codex, OpenCode, Gemini CLI, Cline and Grok</summary>
+
+**Cursor.** Open this link, or add the JSON block above to `~/.cursor/mcp.json`:
 
 `cursor://anysphere.cursor-deeplink/mcp/install?name=ellora&config=eyJ1cmwiOiJodHRwczovL2FwaS5nZXRlbGxvcmEuY29tL3YxL2V4dGVybmFsL21jcCJ9`
 
-### OpenCode
+**VS Code.** Open this link, or run **MCP: Add Server** and select HTTP:
 
-Add the remote server to `opencode.json` in your project, or to
-`~/.config/opencode/opencode.json` for every project:
+`vscode:mcp/install?%7B%22name%22%3A%22ellora%22%2C%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A//api.getellora.com/v1/external/mcp%22%7D`
+
+VS Code needs `"type": "http"` under a `servers` key, in `.vscode/mcp.json`:
+
+```json
+{
+  "servers": {
+    "ellora": {
+      "type": "http",
+      "url": "https://api.getellora.com/v1/external/mcp"
+    }
+  }
+}
+```
+
+**Codex.**
+
+```bash
+codex mcp add ellora --url https://api.getellora.com/v1/external/mcp
+codex mcp login ellora
+```
+
+**OpenCode.** Add this to `opencode.json` in your project, or to `~/.config/opencode/opencode.json` for all projects:
 
 ```json
 {
@@ -53,156 +116,44 @@ Add the remote server to `opencode.json` in your project, or to
 }
 ```
 
-Then sign in:
+Then run `opencode mcp auth ellora` and `npx skills add getellora/agent-skills -a opencode`.
 
-```bash
-opencode mcp auth ellora
-```
-
-OpenCode also loads the skill, so it runs the review loop before it shows you a
-draft. Install both skills for OpenCode:
-
-```bash
-npx skills add getellora/agent-skills -a opencode
-```
-
-That writes to `.agents/skills/` in the project; add `-g` for
-`~/.config/opencode/skills/`.
-
-### VS Code
-
-Open this link, or run **MCP: Add Server** and choose HTTP:
-
-`vscode:mcp/install?%7B%22name%22%3A%22ellora%22%2C%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A//api.getellora.com/v1/external/mcp%22%7D`
-
-Or add this to `.vscode/mcp.json`, under a `servers` key instead of `mcpServers`:
-
-```json
-{
-  "servers": {
-    "ellora": {
-      "type": "http",
-      "url": "https://api.getellora.com/v1/external/mcp"
-    }
-  }
-}
-```
-
-### Codex
-
-```bash
-codex mcp add ellora --url https://api.getellora.com/v1/external/mcp
-codex mcp login ellora
-```
-
-### Grok
-
-- Grok Build reads Claude Code marketplaces, so the Claude Code commands above also work there. To add only the server: `grok mcp add --transport http ellora https://api.getellora.com/v1/external/mcp`.
-- grok.com: open https://grok.com/connectors, select **New Connector > Custom**, and enter the server URL.
-
-### Gemini CLI
+**Gemini CLI.**
 
 ```bash
 gemini mcp add --transport http ellora https://api.getellora.com/v1/external/mcp
 ```
 
-Then run `/mcp auth ellora` inside Gemini CLI.
+Then run `/mcp auth ellora` in Gemini CLI.
 
-### ChatGPT
+**Cline.** Use the JSON block above. Cline needs `streamableHttp`, not `http`. On first connect, select **Authenticate**.
 
-Ellora is live in the ChatGPT plugin directory — [install it from the listing](https://chatgpt.com/plugins/plugin_asdk_app_6ad60044b6b88191b9aae935d686d193). If your workspace restricts directory installs, add Ellora as a custom connector with the server URL instead. Your workspace may need developer mode turned on for custom connectors.
+**Grok.** Grok Build reads Claude Code marketplaces, so the Claude Code commands work. On grok.com, open https://grok.com/connectors, select **New Connector > Custom**, and enter the server URL.
 
-### Cline
+**Skills by hand.** `npx skills add` finds every supported agent on your computer. Add `-g` to install for your user, or `--skill ellora` for one skill only. To copy by hand, put `skills/ellora` in `.agents/skills/`, `.claude/skills/`, `.windsurf/skills/` or `.grok/skills/`.
 
-Cline needs `streamableHttp` because it rejects `"type": "http"`. Add this to your Cline MCP settings:
+**From a URL.** Tell your agent: `set up https://getellora.com/SKILL.md`.
 
-```json
-{
-  "mcpServers": {
-    "ellora": {
-      "type": "streamableHttp",
-      "url": "https://api.getellora.com/v1/external/mcp"
-    }
-  }
-}
-```
+</details>
 
-On first connect, Cline shows **Authenticate**, which opens Ellora's sign-in (email code) and then the consent screen.
+**3. Sign in.** The first time your AI app uses Ellora, a browser window opens. Sign in and approve the connection. You do not need an API key.
 
-### Any other MCP client
+**4. Write as usual.** Ask your AI app for a draft. It reviews the draft with Ellora before it shows the draft to you.
 
-Add a remote HTTP (Streamable HTTP) server named `ellora`:
+## Your data
 
-```json
-{
-  "mcpServers": {
-    "ellora": {
-      "type": "streamableHttp",
-      "url": "https://api.getellora.com/v1/external/mcp"
-    }
-  }
-}
-```
+Your AI app sends the draft text to `api.getellora.com` over HTTPS. Ellora keeps each draft and its review in your workspace, so you can see them in the app. A passing review can also update the voice profile it used. The skills and the plugin connect to no other server. Read the [privacy policy](https://getellora.com/privacy/) and the [terms](https://getellora.com/terms/).
 
-VS Code needs `"type": "http"` instead of `streamableHttp`, under a `servers`
-key instead of `mcpServers` — see the VS Code JSON block above.
+## Try Ellora
 
-### Skills only, for any agent that reads skills from GitHub
+<a href="https://app.getellora.com/register">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/readme/try-free-dark.svg">
+    <img src="assets/readme/try-free-light.svg" alt="Try Ellora free. The Free plan includes all four checks and one voice profile. Create a free account." width="100%">
+  </picture>
+</a>
 
-```bash
-npx skills add getellora/agent-skills
-```
-
-This installs both skills into every supported agent it finds, including OpenCode, Claude Code, Cursor, Codex, Gemini CLI, Windsurf, Grok, and GitHub Copilot. Add `-g` for a user-wide install, or `--skill ellora` for the front-door skill only. To copy by hand, put `skills/ellora` in `.agents/skills/` (OpenCode, Codex, Cursor, Cline, Gemini CLI, GitHub Copilot), `.claude/skills/` (Claude Code), `.windsurf/skills/`, or `.grok/skills/`. OpenCode also reads `~/.config/opencode/skills/ellora/`.
-
-### From the URL
-
-Tell your agent: `set up https://getellora.com/SKILL.md`. The agent fetches the skill, saves it, and connects.
-
-## Data and privacy
-
-The plugin holds Markdown skills and JSON manifests. It runs no code on your machine and installs no packages.
-
-It connects one remote MCP server, https://api.getellora.com/v1/external/mcp, over HTTPS. You sign in to it with OAuth in your browser, and the token stays with your MCP client.
-
-When you ask for a review, the model sends the draft text and the IDs of your voice profile and writing brief to that server. It also reports the client and model name when it knows them. Ellora stores each draft it reviews and the review result in your own workspace, so you can see them in the app. A passing review also updates the voice profile it used. If you approve it, the model can save writing rules or a context document to your workspace too. Nothing goes to any other host.
-
-Ellora's privacy policy is at https://getellora.com/privacy/ and its terms are at https://getellora.com/terms/.
-
-## Package files
-
-| File | Used by |
-|---|---|
-| `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `.mcp.json` | Claude Code, claude.ai, Cowork, Grok Build, and the Claude directory |
-| `plugin.json`, `mcp.json`, `assets/` | The ChatGPT plugin directory (Agent Plugins format, with `extensions.com.openai`) |
-| `server.json` | The official MCP Registry, published by `.github/workflows/publish-mcp-registry.yml` as `io.github.getellora/ellora` |
-| `skills/` | Every client above |
-
-Every `mcpServers` copy-paste block above uses `streamableHttp`, the spelling
-Cline requires — except VS Code, which needs `http` under a `servers` key
-(see VS Code above). `.mcp.json`'s `type` also stays `http` (the value
-Claude Code's docs show for this transport), and `mcp.json` and `server.json`
-keep `streamable-http` (the exact value their own schemas require).
-
-## What the skill does
-
-Once loaded, the agent:
-
-1. Checks whether the `ellora_*` tools are available in the session.
-2. If they are not, walks the user through adding the server and signing in, or registering.
-3. Once connected, runs the review loop before it shows any draft: pick a voice profile, pick a writing brief, start a session, review, rewrite from the returned guidance, and repeat until verification passes.
-
-The skill triggers on mentions of Ellora, deslop or AI slop, brand voice QA, voice or tone checks, style guides, writing briefs, voice profiles, and requests to review or rewrite a draft.
-
-## Keeping the copies in sync
-
-The copy served at https://getellora.com/SKILL.md comes from the private `ellora-website` repository, and this note is for the maintainers of both. A change to the skill lands in both places in the same pass: `skills/ellora/SKILL.md` here and `public/SKILL.md` there. Bump `metadata.version` in both files and `version` in `.claude-plugin/plugin.json` and `plugin.json`. Claude Code keeps plugin users on the old version until that number changes. When the server's tool surface changes, set `version` in `server.json` to the server's new `#[Version]` and run the registry workflow.
-
-## Links
-
-- Website and demo: https://getellora.com
-- App: https://app.getellora.com
-- Questions: hello@getellora.com
+<p align="center">Questions? Write to <a href="mailto:hello@getellora.com">hello@getellora.com</a>.</p>
 
 ## License
 
