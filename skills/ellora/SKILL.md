@@ -257,7 +257,8 @@ also lives on the server as the `ellora_review_loop` MCP prompt.
 6. **Read `convergence_recommendation`, then do what `next_action` says.**
    Separate fields: `convergence_recommendation` is `keep_rewriting`,
    `ready_to_verify`, or `diminishing_returns`; `next_action` is the imperative
-   summary (and may name open blue suggestions). Follow `next_action`:
+   summary. Each bullet below is one `convergence_recommendation` value. In
+   every case, follow `next_action`:
    - `keep_rewriting` → open mandatory findings and/or a failed verification
      with passes left. The response includes `rewrite_guidance`. Go to step 7.
      **Do not show the draft to the user yet.**
@@ -273,7 +274,8 @@ also lives on the server as the `ellora_review_loop` MCP prompt.
    **Blue findings never gate.** Optional suggestions in
    `current_finding_counts.blue`. They never change `convergence_recommendation`,
    never appear in `rewrite_guidance`'s edit scope, and never require another
-   pass on their own. Read `next_action` for open blue notes; apply or ignore.
+   pass on their own. On a `ready_to_verify` pass, `next_action` also names
+   open blue suggestions. Apply or ignore them.
 7. **Rewrite, then re-review.** When the response includes `rewrite_guidance`,
    use it to rewrite the content yourself, then **go back to step 5** with the
    new text and the same `content_session_id`. Send the whole revised content,
@@ -282,9 +284,10 @@ also lives on the server as the `ellora_review_loop` MCP prompt.
    Edit scope names. A case-style, point-of-view, or question-rate finding covers
    every sentence even though it is reported on sentence 1. After a failed verify
    there is no Edit scope. `next_action` names what failed, and
-   `verification.meaning_changes` and `verification.lost_key_words` give the
-   detail. Put those facts back without restoring phrasing the first review
-   flagged, and change nothing else.
+   `verification.failure_reasons` lists every reason.
+   `verification.meaning_changes` and, when key words were lost,
+   `verification.lost_key_words` give the detail. Put those facts back without
+   restoring phrasing the first review flagged, and change nothing else.
 8. **Verification and learning are automatic.** A passing call that isn't the
    session's first already carries the `verification` block, and on success
    against a saved profile a `learning_event`. There is no separate verify call

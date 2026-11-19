@@ -96,8 +96,9 @@ the draft passes. There is no separate verify call.
 6. **Read `convergence_recommendation`, then do what `next_action` says.**
    Separate fields: `convergence_recommendation` is `keep_rewriting`,
    `ready_to_verify`, or `diminishing_returns`; `next_action` is the imperative
-   summary (and may name open blue suggestions). The response also carries
-   `iteration` / `max_iterations`. Follow `next_action`:
+   summary. The response also carries `iteration` / `max_iterations`. Each
+   bullet below is one `convergence_recommendation` value. In every case,
+   follow `next_action`:
    - **`keep_rewriting`** → open mandatory findings and/or a failed verification
      with passes left. The response includes `rewrite_guidance`. Go to step 7.
      **Do not show the draft to the user yet.**
@@ -113,7 +114,8 @@ the draft passes. There is no separate verify call.
    **Blue findings never gate.** Optional suggestions in
    `current_finding_counts.blue`. They never change `convergence_recommendation`,
    never appear in `rewrite_guidance`'s edit scope, and never require another
-   pass on their own. Read `next_action` for open blue notes; apply or ignore.
+   pass on their own. On a `ready_to_verify` pass, `next_action` also names
+   open blue suggestions. Apply or ignore them.
 
 7. **Rewrite, then re-review.** When the response includes `rewrite_guidance`,
    use it to rewrite the content yourself, then **go back to step 5** with the
@@ -123,9 +125,10 @@ the draft passes. There is no separate verify call.
    Edit scope names. A case-style, point-of-view, or question-rate finding covers
    every sentence even though it is reported on sentence 1. After a failed verify
    there is no Edit scope. `next_action` names what failed, and
-   `verification.meaning_changes` and `verification.lost_key_words` give the
-   detail. Put those facts back without restoring phrasing the first review
-   flagged, and change nothing else.
+   `verification.failure_reasons` lists every reason.
+   `verification.meaning_changes` and, when key words were lost,
+   `verification.lost_key_words` give the detail. Put those facts back without
+   restoring phrasing the first review flagged, and change nothing else.
 
    Keep going around 5 → 6 → 7 until step 6 sends you out of the loop. Do
    not stop early just because the draft "seems good enough" — the
@@ -141,9 +144,8 @@ the draft passes. There is no separate verify call.
    top-level `passed` to `false`. `convergence_recommendation` becomes
    `keep_rewriting` (with `rewrite_guidance`) until the pass limit, then
    `diminishing_returns` without `rewrite_guidance`. Follow `next_action` in
-   either case. That learning write needs no extra call. `learning_event` is
-   `recorded`, or `nothing_to_learn` when the pass resolved no findings or
-   repeats an earlier result. A recorded event does not edit the profile. It
+   either case. `learning_event` is `recorded`, or `nothing_to_learn` when the
+   pass resolved no findings or repeats an earlier result. A recorded event does not edit the profile. It
    feeds later rewrite guidance for that profile, so for a test or dry run, use
    a scratch profile, not a writer's real one.
 
