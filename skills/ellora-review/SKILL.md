@@ -129,8 +129,10 @@ the draft passes. There is no separate verify call.
    names what failed, and
    `verification.failure_reasons` lists every reason.
    `verification.meaning_changes` and, when key words were lost,
-   `verification.lost_key_words` give the detail. Put those facts back without
-   restoring phrasing the first review flagged, and change nothing else.
+   `verification.lost_key_words` give the detail. `rewrite_guidance` then ends
+   with a "Restore the first draft's meaning" section that lists the same
+   reasons and quotes the first draft. Put those facts back without restoring
+   phrasing the first review flagged, and change nothing else.
 
    Keep going around 5 → 6 → 7 until step 6 sends you out of the loop. Do
    not stop early just because the draft "seems good enough" — the

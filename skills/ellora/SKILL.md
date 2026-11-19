@@ -289,8 +289,10 @@ two differ, follow this skill and `next_action`.
    names what failed, and
    `verification.failure_reasons` lists every reason.
    `verification.meaning_changes` and, when key words were lost,
-   `verification.lost_key_words` give the detail. Put those facts back without
-   restoring phrasing the first review flagged, and change nothing else.
+   `verification.lost_key_words` give the detail. `rewrite_guidance` then ends
+   with a "Restore the first draft's meaning" section that lists the same
+   reasons and quotes the first draft. Put those facts back without restoring
+   phrasing the first review flagged, and change nothing else.
 8. **Verification and learning are automatic.** A passing call that isn't the
    session's first already carries the `verification` block, and on success
    against a saved profile a `learning_event`. There is no separate verify call
