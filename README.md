@@ -5,12 +5,6 @@
   </picture>
 </a>
 
-<p align="center">
-  <a href="https://getellora.com">Website</a> &nbsp;·&nbsp;
-  <a href="https://app.getellora.com/register">Create a free account</a> &nbsp;·&nbsp;
-  <a href="https://getellora.com/privacy/">Privacy</a>
-</p>
-
 ## What is Ellora?
 
 Ellora checks writing before you publish it. It is an editor that works inside the AI app you already use.
