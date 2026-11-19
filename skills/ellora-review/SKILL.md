@@ -154,11 +154,26 @@ the draft passes. There is no separate verify call.
    feeds later rewrite guidance for that profile, so for a test or dry run, use
    a scratch profile, not a writer's real one.
 
-9. **Teach the profile only on explicit approval.** If the user accepts the
-   delivered rewrite AND approves one or more concise rules you extracted
-   from it, call `ellora_learn_from_accepted_rewrite` with the same
-   `content_session_id`, those rules, and `user_approved: true`. Do not call
-   it on your own inference.
+9. **Teach the profile after every accepted rewrite.** When the user accepts
+   a rewrite, call `ellora_learn_from_accepted_rewrite` with the same
+   `content_session_id`. Send both texts: `original_text` is the draft before
+   the rewrite, `accepted_text` is what the user accepted, including their own
+   edits. Add typed rules for what changed, `{type, value, scope?, evidence?}`,
+   with `type` one of `avoid_phrase`, `prefer_phrase`, `max_sentence_words`,
+   `no_opener`, `punctuation_limit`, `pov`, `question_rate_max` or
+   `freeform`. Ellora runs no model and stores only rules, never either text.
+   - Leave `user_approved` unset. The rules are then suggestions, and Ellora
+     promotes one once it recurs across sessions.
+   - Set `user_approved: true` only when the user explicitly approved the rules
+     in that call. That promotes them at once and needs a team admin: if the
+     response says `approval: "admin_required"`, tell the user the rules were
+     saved as suggestions for an admin.
+   - If the user undoes or rejects a learned rule, send its `rule_key` in
+     `rejected_rule_keys`.
+
+   A promoted structured rule comes back from `ellora_review` as a `voice_dna`
+   finding whose type starts with `learned-`: blue while advisory, yellow once
+   mandatory.
 
 ## What to tell the user at the end
 

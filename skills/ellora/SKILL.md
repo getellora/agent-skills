@@ -304,10 +304,26 @@ two differ, follow this skill and `next_action`.
    pass resolved no findings or repeats an earlier result. A recorded event
    does not edit the profile. It feeds later rewrite guidance for that profile,
    so for a test or dry run, use a scratch profile, not a writer's real one.
-9. **Teach the profile only on explicit approval.** If the user accepts the
-   delivered rewrite *and* approves the rules you extracted from it, call
-   `ellora_learn_from_accepted_rewrite` with `user_approved: true`. Never on
-   your own inference.
+9. **Teach the profile after every accepted rewrite.** When the user accepts
+   a rewrite, call `ellora_learn_from_accepted_rewrite` with the same
+   `content_session_id`. Send both texts: `original_text` is the draft before
+   the rewrite, `accepted_text` is what the user accepted, including their own
+   edits. Add typed rules for what changed, `{type, value, scope?, evidence?}`,
+   with `type` one of `avoid_phrase`, `prefer_phrase`, `max_sentence_words`,
+   `no_opener`, `punctuation_limit`, `pov`, `question_rate_max` or
+   `freeform`. Ellora runs no model and stores only rules, never either text.
+   - Leave `user_approved` unset. The rules are then suggestions, and Ellora
+     promotes one once it recurs across sessions.
+   - Set `user_approved: true` only when the user explicitly approved the rules
+     in that call. That promotes them at once and needs a team admin: if the
+     response says `approval: "admin_required"`, tell the user the rules were
+     saved as suggestions for an admin.
+   - If the user undoes or rejects a learned rule, send its `rule_key` in
+     `rejected_rule_keys`.
+
+   A promoted structured rule comes back from `ellora_review` as a `voice_dna`
+   finding whose type starts with `learned-`: blue while advisory, yellow once
+   mandatory.
 
 Keep going around 5 → 6 → 7 until step 6 sends you out of the loop. Don't stop
 early because the draft "seems good enough" — the `iteration` / `max_iterations`
@@ -326,7 +342,7 @@ you chose to leave. Don't dump raw finding JSON unless asked.
 |---|---|
 | `ellora_session_start` | Open a session for one piece of writing; locks in profile + brief |
 | `ellora_review` | Review the draft; auto-inlines rewrite guidance, auto-verifies |
-| `ellora_learn_from_accepted_rewrite` | Save a human-approved rule (never on inference) |
+| `ellora_learn_from_accepted_rewrite` | After an accepted rewrite: send both texts and typed rules (suggestions unless the user approved) |
 | `ellora_profile_create` | **Admin-only.** Create a voice profile from 2–20 samples |
 | `ellora_profiles_fetch_active` / `_by_id` | Find a usable voice profile id |
 | `ellora_briefs_fetch_active` / `_by_id` | Find a usable writing brief id |
