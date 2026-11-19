@@ -1,120 +1,134 @@
 ---
 name: ellora
 description: >-
-  Connect to Ellora, the hosted brand-voice QA, desloping, and writing-brief
-  reviewer (a remote MCP server), and keep it running on everything the team
-  writes. Use this before writing, editing, or presenting prose meant to go
-  out in the team's voice: blog posts, landing pages, launch announcements,
-  customer emails, docs, social posts, newsletters, release notes. Trigger it
-  the moment the user says any of: Ellora, deslop, desloping, de-slop, AI
-  slop, slop, sounds like AI, humanize this, brand voice, brand voice QA,
-  voice QA, voice check, tone check, style guide, writing brief, voice
-  profile, or asks you to review, polish, or rewrite a draft. Even when
-  Ellora is not named, check whether the ellora_* tools are available before
-  you draft. It handles three states: no Ellora account yet, Ellora added but
-  not connected, and Ellora connected. Once connected, run the review loop
-  before you show the user a draft; do not wait to be asked.
+  Connect to Ellora, the hosted editor that reviews drafts for brand voice,
+  generic AI phrasing (slop), contradictions and writing-brief rules (a
+  remote MCP server). Keep it on for all prose the team writes. Use this
+  skill before you write, edit or present prose that goes out in the team's
+  voice: blog posts, landing pages, launch announcements, customer emails,
+  docs, social posts, newsletters, release notes. Use it when the user says
+  any of: Ellora, deslop, desloping, de-slop, AI slop, slop, sounds like AI,
+  humanize this, brand voice, brand voice QA, voice QA, voice check, tone
+  check, style guide, writing brief, voice profile, or asks you to review,
+  polish or rewrite a draft. When the user does not name Ellora, still check
+  for the ellora_* tools before you draft. The skill handles three states:
+  no Ellora account, Ellora added but not connected, and Ellora connected.
+  When Ellora is connected, run the review loop before you show a draft. Do
+  not wait for the user to ask.
 metadata:
   author: Ellora
-  version: "1.6.0"
+  version: "1.7.0"
 ---
 
 # Ellora
 
-Ellora checks writing before it ships. It reviews a draft against the team's
-saved brand-voice profile (**VoiceDNA**), strips flat/generic AI phrasing (**AI
-Editor**), and enforces the rules in a writing brief (**Editorial**). It runs
-as a hosted MCP server, so writers keep writing in whatever LLM app they
-already use.
+Ellora checks writing before it ships. Each review runs four checks:
+
+- **VoiceDNA** checks that the draft sounds like the team's saved voice profile.
+- **AI Editor** finds generic AI phrasing.
+- **Narrative** finds contradictions and unsupported leaps.
+- **Editorial** checks the draft against the writing brief.
+
+Ellora is a hosted MCP server. The user writes in the AI app they already use.
+You write the draft, Ellora reviews it, and you fix what Ellora finds.
 
 | | |
 |---|---|
 | MCP server | `https://api.getellora.com/v1/external/mcp` |
 | Transport | Remote HTTP (Streamable HTTP) |
-| Auth | **OAuth only** — there is no API key to paste |
-| Surface | 12 tools + 1 prompt, all prefixed `ellora_` |
-| App (team admin) | https://app.getellora.com — voice profiles, briefs, tokens |
-| Website / demo | https://getellora.com |
-| Skill repo | https://github.com/getellora/agent-skills (the same file is served at https://getellora.com/SKILL.md) |
+| Sign-in | **OAuth only**. There is no API key. |
+| Tools | 12 tools and 1 prompt. All names start with `ellora_`. |
+| App (team admins) | https://app.getellora.com (voice profiles, briefs, tokens) |
+| Website and demo | https://getellora.com |
+| Skill source | https://github.com/getellora/agent-skills (the same file is at https://getellora.com/SKILL.md) |
 
-**Create account** for the **Free** plan at https://app.getellora.com/register.
-Verify your email with the code or magic link. Every new account starts on the
-Free plan; there is no plan to pick at sign-up. The Free plan includes one active
-voice profile, one connected AI app (MCP connection), up to 50,000 words checked
-each calendar month (UTC), one review running at a time, and no team members.
-Accounts created before the Free plan launched keep their earlier limits.
+## Plans
 
-**Team** is for in-house teams that need more voice profiles and members.
+Every new account starts on the **Free** plan. There is no plan to select at
+sign-up. The user creates the account at https://app.getellora.com/register.
 
+The Free plan includes:
+
+- one active voice profile
+- one connected AI app (MCP connection)
+- 50,000 words checked each calendar month (UTC)
+- one review that runs at a time
+- no team members
+
+Accounts that existed before the Free plan keep their earlier limits.
+
+The **Team** plan is for in-house teams that need more voice profiles and members.
 Email us at hello@getellora.com or set up a call at https://cal.com/getellorademo/client-demo.
-The dashboard Pricing page and https://getellora.com/#pricing list the plans (no
-prices shown) and the same schedule-call path. Ellora can upgrade your existing
-account once we've talked.
+The dashboard Pricing page and https://getellora.com/#pricing show the plans,
+with no prices. Ellora can upgrade an existing account after we talk.
 
-## First: work out which state you are in
+## Find the state
 
-Do this once, at the start, before anything else. Everything below branches
-off the answer.
+Do this one time, at the start. All the steps after it depend on the result.
 
-1. **Are the `ellora_*` tools available in this session?** Call
-   `ellora_profiles_fetch_active` to find out.
-   - The call returns successfully — an object with a `voice_profiles` array,
-     possibly empty → **State 3**, connected.
-   - The call returns `401` / `403`, or the client reports the server needs
-     authentication → **State 2**, go authenticate.
-   - The tools do not exist, or the server is not configured → **State 2**,
-     go install.
-2. **State 2 could become State 1.** If the user cannot complete the OAuth
-   sign-in because they do not have an Ellora account, stop and go to
-   **State 1**. Never fake the connection, and never stub out review results.
+1. Call `ellora_profiles_fetch_active`.
+   - The call returns an object with a `voice_profiles` array (the array can
+     be empty). Go to **State 3: connected**.
+   - The call returns `401` or `403`, or the client says the server needs
+     authentication. Go to **State 2** and sign in.
+   - The tool does not exist, or the server is not set up. Go to **State 2**
+     and add the server.
+2. If the user cannot sign in because they have no Ellora account, go to
+   **State 1**.
 
-Tell the user which state you found, in one sentence, and what you are doing
-about it. Then do it.
+Never fake a connection. Never make up review results.
 
-## State 1 — The user has no Ellora account
+Tell the user in one sentence which state you found and what you will do.
+Then do it.
 
-Direct them to https://app.getellora.com/register and **Create account** on the
-**Free** plan.
-They enter their email, tick the box to accept the Terms
-(https://getellora.com/terms/) and Privacy Policy (https://getellora.com/privacy/),
-and verify the code or magic link sent to their inbox. The user must read and
-accept the terms themselves: never tick the box, accept, or sign up on their
-behalf. Do not ask them to share the code in chat or claim the account exists
-before verification succeeds. If they already have an account, this signs them in
-without changing their plan or creating another workspace.
+## State 1: The user has no account
 
-Once signed in, continue with State 2 to connect their LLM app through OAuth.
-The Free plan supports one active voice profile, one connected AI app, 50,000 words
-checked each calendar month (UTC), one review running at a time, and no additional
-team members. If a profile already exists, use it; do not create another profile or
-workspace to bypass the limit. If a review is refused because the monthly word limit
-is reached, tell the user when it resets (the error says so) instead of retrying.
+Send the user to https://app.getellora.com/register and tell them to select
+**Create account**. The user then:
+
+1. Enters their email address.
+2. Accepts the Terms (https://getellora.com/terms/) and the Privacy Policy
+   (https://getellora.com/privacy/).
+3. Enters the code or opens the magic link from the email.
+
+The user must read and accept the terms. Do not accept the terms, tick the
+box or sign up for the user. Do not ask the user to send the code in the chat.
+Do not say that the account exists until the user confirms the email code
+or magic link. If the user already has an account, this step signs them in.
+It does not change their plan and does not make a second workspace.
+
+After sign-in, go to State 2 and connect the AI app.
+
+Do not go around Free plan limits:
+
+- If a voice profile exists, use it. Do not make a second profile or a second
+  workspace to get past the limit.
+- If Ellora refuses a review because the monthly word limit is reached, tell
+  the user when the limit resets. The error message says when. Do not try
+  again.
 
 For Team access:
-
 Email us at hello@getellora.com or set up a call at https://cal.com/getellorademo/client-demo.
-The dashboard Pricing page and https://getellora.com/#pricing list the plans (no
-prices shown) and provide the same schedule-call path.
 
-If signup or authentication fails, report the actual error and offer to
-continue without Ellora's review. Never present unreviewed output as reviewed.
+If sign-up or sign-in fails, tell the user the exact error. Offer to continue
+without an Ellora review. Never show a draft that Ellora did not review as
+reviewed.
 
-## State 2 — Ellora is not connected yet
+## State 2: Ellora is not connected
 
-### 1. Add the MCP server
+### Add the MCP server
 
-Add a remote **HTTP** server named `ellora` pointing at
-`https://api.getellora.com/v1/external/mcp`. Pick the row that matches the
-client you are running in.
+Add a remote HTTP server with the name `ellora` and the URL
+`https://api.getellora.com/v1/external/mcp`. Use the row for your client.
 
-**CLI clients**
+**Command-line clients**
 
 | Client | Command |
 |---|---|
 | Command Code | `cmd mcp add --transport http ellora https://api.getellora.com/v1/external/mcp` |
 | Claude Code | `claude mcp add --transport http ellora https://api.getellora.com/v1/external/mcp` |
 
-**OpenCode** uses its own `mcp` block, not `mcpServers`:
+**OpenCode** uses an `mcp` block, not `mcpServers`:
 
 ```json
 {
@@ -128,12 +142,12 @@ client you are running in.
 }
 ```
 
-Put that in `opencode.json` in the project, or in
-`~/.config/opencode/opencode.json` for every project. Then run
+Put the block in `opencode.json` in the project, or in
+`~/.config/opencode/opencode.json` for all projects. Then run
 `opencode mcp auth ellora`.
 
-**Config-file clients** (Cursor, Windsurf, Cline, and most others): add this
-entry to the client's MCP settings, then restart it.
+**Clients with a config file** (Cursor, Windsurf, Cline and most others): add
+this entry to the MCP settings, then restart the client.
 
 ```json
 {
@@ -146,8 +160,8 @@ entry to the client's MCP settings, then restart it.
 }
 ```
 
-**VS Code** needs its own shape: `"type": "http"` (not `streamableHttp`),
-under a `servers` key instead of `mcpServers`:
+**VS Code** uses a different shape: `"type": "http"` (not `streamableHttp`),
+under a `servers` key (not `mcpServers`):
 
 ```json
 {
@@ -160,214 +174,231 @@ under a `servers` key instead of `mcpServers`:
 }
 ```
 
-Claude Code can instead install the Ellora plugin, which adds this server and
-this skill together: `claude plugin marketplace add getellora/agent-skills`,
-then `claude plugin install ellora@getellora`. A server added that way is
-listed as `plugin:ellora:ellora`.
+Claude Code can instead install the Ellora plugin, which adds the server and
+this skill together. Run `claude plugin marketplace add getellora/agent-skills`,
+then `claude plugin install ellora@getellora`. Claude Code lists a server from
+the plugin as `plugin:ellora:ellora`.
 
-OpenCode can load the same skill from this repository: run
-`npx skills add getellora/agent-skills -a opencode` (add `-g` for a global
-install), or copy `skills/ellora` to `.agents/skills/ellora/` or
+OpenCode can load this skill from the same repository. Run
+`npx skills add getellora/agent-skills -a opencode` (add `-g` to install for
+all projects), or copy `skills/ellora` to `.agents/skills/ellora/` or
 `~/.config/opencode/skills/ellora/`.
 
-**Hosted chat clients** (ChatGPT, Claude Desktop, claude.ai, Perplexity, and
-similar): open the client's connector/MCP settings, choose to add a **custom
-remote connector**, and give it the URL above. No headers, no keys.
+**Hosted chat clients** (ChatGPT, Claude Desktop, claude.ai, Perplexity and
+similar): open the connector or MCP settings, add a **custom remote
+connector**, and enter the URL above. Do not add headers or keys.
 
-**Any other agent**: the two facts you need are the URL and the shape — it is a
-remote HTTP MCP server that authenticates with OAuth. Configure it however that
-client configures remote MCP servers; don't guess at a token.
+**Other agents:** use the URL above. The server is a remote HTTP MCP server
+that uses OAuth. Set it up the way that client sets up remote MCP servers. Do
+not guess a token.
 
-### 2. Authenticate
+### Sign in
 
-OAuth is the only auth path, so the client has to run the flow — you cannot
-curl it into place.
+The client must run the OAuth sign-in. You cannot do it with curl.
 
-- Command Code: `cmd mcp auth ellora`, or run `/mcp` and authenticate.
-- Claude Code: run `/mcp` and authenticate `ellora`. A server you added with
-  `claude mcp add` also accepts `claude mcp login ellora`; one installed
-  through the Ellora plugin is listed as `plugin:ellora:ellora`, so use `/mcp`.
-- OpenCode: `opencode mcp auth ellora`, or run `/mcp` and authenticate.
-- Other clients: trigger a connect/authenticate action and follow the browser
-  prompt.
+- Command Code: run `cmd mcp auth ellora`, or run `/mcp` and authenticate.
+- Claude Code: run `/mcp` and authenticate `ellora`. For a server added with
+  `claude mcp add`, `claude mcp login ellora` also works. For a server from
+  the plugin, use `/mcp`, because its name is `plugin:ellora:ellora`.
+- OpenCode: run `opencode mcp auth ellora`, or run `/mcp` and authenticate.
+- Other clients: start the connect or authenticate action and follow the
+  browser.
 
 A browser opens on `app.getellora.com`. The user signs in and approves the
-connection; tokens are then stored and refreshed by the client. If no browser
-opens, print the URL and have them open it manually, then paste the callback
-URL back. Verify afterwards (re-run the check from "First", or
-`cmd mcp list` / `/mcp` / `opencode mcp list`) that the server shows
-**connected**, not *needs authentication*.
+connection. The client then keeps and refreshes the tokens. If no browser
+opens, show the user the URL. The user opens it and pastes the callback URL
+back to you.
 
-**If the user has no account**, go to State 1 to register. If an existing
-account cannot sign in, report the error and direct them to
-hello@getellora.com; registration does not bypass a suspended account.
+After sign-in, do the state check again, or run `cmd mcp list`, `/mcp` or
+`opencode mcp list`. The server must show **connected**, not *needs
+authentication*.
 
-## State 3 — Connected: write with Ellora on
+If the user has no account, go to State 1. If an existing account cannot
+sign in, tell the user the error and send them to hello@getellora.com. A new
+registration does not get around a suspended account.
 
-This is the standing default from here on: **whenever you are drafting or
-substantially rewriting prose of the covered kinds, run the review loop before
-you present the draft to the user.** Not only when they say "Ellora" — the
-point is that it is always on, so the first version they see is already
-on-voice and deslopped.
+## State 3: Ellora is connected
 
-Covered: blog posts and articles · landing-page and website copy · launch and
-release announcements · customer-facing emails · docs for an external audience
-· social posts · newsletters · decks and outreach.
+From now on, Ellora is on by default. When you write or largely rewrite prose
+of the types below, run the review loop before you show the draft. Do this
+even when the user does not say "Ellora". The first draft the user sees must
+already be reviewed.
 
-Skip: code, config, commit messages, internal scratch notes, quick chat
-replies, and anything the user calls a rough throwaway. When it is genuinely
-borderline, ask once: "Want me to run this through the Ellora voice check?"
+Review these: blog posts and articles, landing-page and website copy, launch
+and release announcements, customer emails, docs for an external
+audience, social posts, newsletters, decks and outreach.
 
-When the connection is new, confirm it in one line and put it to work — say
-what you'll do (run every draft through the voice check) and get on with the
-user's actual writing task.
+Skip these: code, config, commit messages, internal scratch notes, short
+chat replies, and text the user calls a rough draft to throw away. If you are
+not sure, ask one time: "Do you want me to run this through the Ellora voice
+check?"
+
+When the connection is new, confirm it in one line. Say that you will run
+every draft through the voice check. Then continue with the user's writing
+task.
 
 ## The review loop
 
-Fuller version: the `ellora-review` skill, if it is installed. A shorter
-version lives on the server as the `ellora_review_loop` MCP prompt. Where the
-two differ, follow this skill and `next_action`.
+The `ellora-review` skill, if installed, gives the full loop. The server also
+gives a short version as the `ellora_review_loop` MCP prompt. If the two are
+different, follow this skill and `next_action`.
 
-1. **Pick a voice profile** — `ellora_profiles_fetch_active`. One → use it.
-   Several → ask which (teams commonly keep one per writer, or per author they
-   want to sound like). None → a team admin can create one with
-   `ellora_profile_create` from 2–20 samples of the team's own writing, then
-   use the returned `voice_profile_id`. Don't send them elsewhere to build one,
-   and never review without one — an id has to resolve to a saved, active
-   profile. If the user isn't an admin and none exists, stop and say a profile
-   has to be created first; that's a real blocker, not something to work around.
-2. **Pick a writing brief** — `ellora_briefs_fetch_active`. Same pattern. If
-   there is none, build an inline `writing_brief_json` for this session only
-   (never saved). **A brief is mandatory** — `ellora_session_start` fails
-   without either a `writing_brief_id` or a `writing_brief_json`. Pass the JSON
-   as an **object**, not a string. Required fields: `version` (`"1"`),
-   `audience`, `intent`, `format`. `format` is one of `general`, `social`,
-   `deck`, `outreach`, `blog`, `audit`, `website`.
-3. **Start the session** — `ellora_session_start` with those two. They are
-   locked for the whole session. Keep the returned `content_session_id` and
-   pass it to every later call for this one piece of content. While you're
-   there, self-report the optional `model_name` / `model_class` /
-   `model_version` / `thinking_effort` and `mcp_client_name` /
-   `mcp_client_version` — analytics-only, never affects the review.
-4. **Optionally pull positioning** — `ellora_positioning_recommendations`,
-   before drafting. Advisory only.
-5. **Review** — `ellora_review` with the `content_session_id` and the current
-   draft as `content`. It takes no profile or brief argument of its own — both
-   are already locked into the session. `content` is capped at 100,000
-   characters, so split anything longer into successive pieces.
+1. **Select a voice profile.** Call `ellora_profiles_fetch_active`.
+   - One profile: use it.
+   - More than one: ask the user which one. Teams often keep one profile for
+     each writer, or for each author they want to sound like.
+   - None: a team admin can make one with `ellora_profile_create` from 2 to 20
+     samples of the team's own writing. Then use the `voice_profile_id` it
+     returns. Do not send the user to another place to make one.
+
+   Never review without a voice profile. The id must belong to a saved,
+   active profile. If the user is not an admin and no profile exists, stop.
+   Tell the user that an admin must make a profile first. Do not try to get
+   around this.
+2. **Select a writing brief.** Call `ellora_briefs_fetch_active` and use the
+   same steps. If no brief exists, make an inline `writing_brief_json` for
+   this session only. Ellora does not save it.
+
+   **A brief is mandatory.** `ellora_session_start` fails without a
+   `writing_brief_id` or a `writing_brief_json`. Send the JSON as an
+   **object**, not as a string. The required fields are `version` (`"1"`),
+   `audience`, `intent` and `format`. `format` is one of `general`, `social`,
+   `deck`, `outreach`, `blog`, `audit` or `website`.
+3. **Start the session.** Call `ellora_session_start` with the profile and
+   the brief. They stay locked for the full session. Keep the
+   `content_session_id` it returns, and send it with every later call for
+   this piece of content. In the same call, you can also send `model_name`,
+   `model_class`, `model_version`, `thinking_effort`, `mcp_client_name` and
+   `mcp_client_version`. These fields are optional and for analytics only.
+   They do not change the review.
+4. **Get positioning (optional).** Before you write, you can call
+   `ellora_positioning_recommendations`. Its advice is advisory only.
+5. **Review.** Call `ellora_review` with the `content_session_id` and the
+   current draft as `content`. Do not send a profile or a brief, because the
+   session already has them. `content` can have up to 100,000 characters.
+   Split longer text into successive parts.
 6. **Read `convergence_recommendation`, then do what `next_action` says.**
-   Separate fields: `convergence_recommendation` is `keep_rewriting`,
-   `ready_to_verify`, or `diminishing_returns`; `next_action` is the imperative
-   summary. Each bullet below is one `convergence_recommendation` value. In
-   every case, follow `next_action`:
-   - `keep_rewriting` → open mandatory findings, or a failed verification
-     with passes left. The response includes `rewrite_guidance`. Go to step 7.
-     **Do not show the draft to the user yet.**
-   - `ready_to_verify` → no mandatory findings remain. On the session's first
-     review with no judgment-required finding open, `next_action` says deliver
-     as-is. On later reviews, this
-     response includes `verification` — deliver when `verification.passed` is
-     `true`. If a judgment-required finding is open, `next_action` names it:
-     get a human decision before you deliver.
-   - `diminishing_returns` → mandatory findings stalled, you hit
-     `max_iterations`, or verification failed on the last allowed pass. Stop
-     looping. Tell the user what is still wrong and ask how to proceed.
+   These are two fields. `convergence_recommendation` is `keep_rewriting`,
+   `ready_to_verify` or `diminishing_returns`. `next_action` tells you what
+   to do next. Each item below is one `convergence_recommendation` value. For
+   every value, follow `next_action`.
+   - `keep_rewriting`: mandatory findings are open, or a verification failed
+     and review rounds are left. The response includes `rewrite_guidance`. Go to
+     step 7. **Do not show the draft to the user yet.**
+   - `ready_to_verify`: no mandatory findings are open. On the first review
+     of the session, when no judgment-required finding is open, `next_action`
+     tells you to deliver the draft as it is. On later reviews, the response
+     includes `verification`. Deliver the draft when `verification.passed` is
+     `true`. If a judgment-required finding is open, `next_action` names it.
+     Get a decision from a person before you deliver.
+   - `diminishing_returns`: the mandatory findings stopped going down, you
+     reached `max_iterations`, or the verification failed on the last
+     allowed review round. Stop the loop. Tell the user what is still wrong and ask
+     what to do.
 
-   **Blue findings never gate.** Optional suggestions in
-   `current_finding_counts.blue`. They never change `convergence_recommendation`,
-   never appear in `rewrite_guidance`'s edit scope, and never require another
-   pass on their own. On a `ready_to_verify` pass, `next_action` also counts
-   open blue suggestions. Apply or ignore them.
-7. **Rewrite, then re-review.** When the response includes `rewrite_guidance`,
-   use it to rewrite the content yourself, then **go back to step 5** with the
-   new text and the same `content_session_id`. Send the whole revised content,
-   not only the changed sentences. **Edit scope** covers only mandatory Red/Yellow
-   findings (`rewrite_guidance` also has a Blue section). Change only the sentences
-   Edit scope names. A mandatory VoiceDNA case-style, point-of-view, or
-   question-rate finding covers every sentence even though it is reported on
-   sentence 1. After a failed verify there is no Edit scope. `next_action`
-   names what failed, and
-   `verification.failure_reasons` lists every reason.
-   `verification.meaning_changes` and, when key words were lost,
-   `verification.lost_key_words` give the detail. `rewrite_guidance` then ends
-   with a "Restore the first draft's meaning" section that lists the same
-   reasons and quotes the first draft. Put those facts back without restoring
-   phrasing the first review flagged, and change nothing else.
-8. **Verification and learning are automatic.** A passing call that isn't the
-   session's first already carries the `verification` block, and on success
-   against a saved profile a `learning_event`. There is no separate verify call
-   to make. A failed verify records no `learning_event` and sets
-   top-level `passed` to `false`. `convergence_recommendation` becomes
-   `keep_rewriting` (with `rewrite_guidance`) until the pass limit, then
-   `diminishing_returns` without `rewrite_guidance`. Follow `next_action` in
-   either case. `learning_event` is `recorded`, or `nothing_to_learn` when the
-   pass resolved no findings or repeats an earlier result. A recorded event
-   does not edit the profile. It feeds later rewrite guidance for that profile,
-   so for a test or dry run, use a scratch profile, not a writer's real one.
-9. **Teach the profile after every accepted rewrite.** When the user accepts
-   a rewrite, call `ellora_learn_from_accepted_rewrite` with the same
-   `content_session_id`. Send both texts: `original_text` is the draft before
-   the rewrite, `accepted_text` is what the user accepted, including their own
-   edits. Add typed rules for what changed, `{type, value, scope?, evidence?}`,
-   with `type` one of `avoid_phrase`, `prefer_phrase`, `max_sentence_words`,
-   `no_opener`, `punctuation_limit`, `pov`, `question_rate_max` or
-   `freeform`. Ellora runs no model and stores only rules, never either text.
-   - Leave `user_approved` unset. The rules are then suggestions, and Ellora
-     promotes one once it recurs across sessions.
+   **Blue findings never block.** They are optional suggestions, counted in
+   `current_finding_counts.blue`. They never change
+   `convergence_recommendation`, are never in the edit scope of
+   `rewrite_guidance`, and never need another review round by themselves. On a
+   `ready_to_verify` review, `next_action` also counts the open blue
+   suggestions. You can apply them or not.
+7. **Rewrite, then review again.** When the response includes
+   `rewrite_guidance`, use it to rewrite the content. Then **go back to step
+   5** with the new text and the same `content_session_id`. Send all of the
+   revised content, not only the changed sentences.
+   - The **edit scope** covers only the mandatory red and yellow findings.
+     (`rewrite_guidance` also has a blue section.) Change only the sentences
+     that the edit scope names.
+   - A mandatory VoiceDNA finding for case style, point of view or question
+     rate applies to all sentences, even though Ellora reports it on
+     sentence 1.
+   - After a failed verification, there is no edit scope. `next_action` names
+     what failed. `verification.failure_reasons` lists all the reasons.
+     `verification.meaning_changes` gives the details, and so does
+     `verification.lost_key_words` when key words were lost. `rewrite_guidance`
+     then ends with a "Restore the first draft's meaning" section. That
+     section lists the same reasons and quotes the first draft. Put those
+     facts back. Do not put back phrasing that the first review flagged.
+     Change nothing else.
+8. **Verification and learning are automatic.** There is no separate verify
+   call.
+   - A review call that passes and is not the first in the session includes
+     the `verification` block. When that verification succeeds against a
+     saved profile, the response also includes a `learning_event`.
+   - A failed verification records no `learning_event` and sets the top-level
+     `passed` to `false`. `convergence_recommendation` is then
+     `keep_rewriting` (with `rewrite_guidance`) until the review-round limit. After
+     that, it is `diminishing_returns` without `rewrite_guidance`. In both
+     cases, follow `next_action`.
+   - `learning_event` is `recorded`, or `nothing_to_learn` when the review
+     resolved no findings or repeats an earlier result. A recorded event does
+     not edit the profile. It changes later rewrite guidance for that
+     profile. For a test or a trial run, use a test profile, not the real
+     profile of a writer.
+9. **Teach the profile after each accepted rewrite.** When the user accepts a
+   rewrite, call `ellora_learn_from_accepted_rewrite` with the same
+   `content_session_id`. Send both texts. `original_text` is the draft before
+   the rewrite. `accepted_text` is the text that the user accepted, with the
+   user's own edits. Add typed rules for what changed, as
+   `{type, value, scope?, evidence?}`. `type` is one of `avoid_phrase`,
+   `prefer_phrase`, `max_sentence_words`, `no_opener`, `punctuation_limit`,
+   `pov`, `question_rate_max` or `freeform`. Ellora runs no model. It keeps
+   only the rules, never the texts.
+   - Do not set `user_approved`. The rules are then suggestions. Ellora
+     promotes a rule when it occurs again in other sessions.
    - Set `user_approved: true` only when the user explicitly approved the rules
-     in that call. That promotes them at once and needs a team admin: if the
-     response says `approval: "admin_required"`, tell the user the rules were
-     saved as suggestions for an admin.
+     in that call. This promotes them at once, and it needs a team admin. If
+     the response says `approval: "admin_required"`, tell the user that
+     Ellora saved the rules as suggestions for an admin.
    - If the user undoes or rejects a learned rule, send its `rule_key` in
      `rejected_rule_keys`.
 
-   A promoted structured rule comes back from `ellora_review` as a `voice_dna`
-   finding whose type starts with `learned-`: blue while advisory, yellow once
-   mandatory.
+   A promoted structured rule comes back from `ellora_review` as a
+   `voice_dna` finding with a type that starts with `learned-`. It is blue
+   while it is advisory and yellow when it is mandatory.
 
-Keep going around 5 → 6 → 7 until step 6 sends you out of the loop. Don't stop
-early because the draft "seems good enough" — the `iteration` / `max_iterations`
-budget exists so you can keep going with confidence.
+Repeat steps 5, 6 and 7 until step 6 tells you to stop. Do not stop early
+because the draft looks good enough. The `iteration` and `max_iterations`
+values tell you how many review rounds you have.
 
-One session = one piece of content. A different article, or a switch to another
-profile or brief, means a new `ellora_session_start`.
+Use one session for one piece of content. For a different piece, or a
+different profile or brief, call `ellora_session_start` again.
 
-When the loop finishes, present the final draft plus a short summary: how many
-passes it took, what changed at a high level, and anything still flagged that
-you chose to leave. Don't dump raw finding JSON unless asked.
+When the loop ends, show the final draft and a short summary: the number of
+review rounds, what changed in general, and what is still flagged that you chose to
+keep. Do not show the raw finding JSON unless the user asks.
 
 ## Tools
 
-| Tool | Use it for |
+| Tool | Use it to |
 |---|---|
-| `ellora_session_start` | Open a session for one piece of writing; locks in profile + brief |
-| `ellora_review` | Review the draft; auto-inlines rewrite guidance, auto-verifies |
-| `ellora_learn_from_accepted_rewrite` | After an accepted rewrite: send both texts and typed rules (suggestions unless the user approved) |
-| `ellora_profile_create` | **Admin-only.** Create a voice profile from 2–20 samples |
-| `ellora_profiles_fetch_active` / `_by_id` | Find a usable voice profile id |
-| `ellora_briefs_fetch_active` / `_by_id` | Find a usable writing brief id |
-| `ellora_context_fetch_active` / `_by_id` | Read the team's company context docs |
-| `ellora_context_capture` | Save a context doc mid-session (admin activates it) |
-| `ellora_positioning_recommendations` | Advisory messaging/positioning guidance |
+| `ellora_session_start` | Start a session for one piece of writing. Locks the profile and the brief. |
+| `ellora_review` | Review the draft. Adds rewrite guidance and verifies automatically. |
+| `ellora_learn_from_accepted_rewrite` | Send both texts and typed rules after the user accepts a rewrite. The rules are suggestions unless the user approved them. |
+| `ellora_profile_create` | **Admins only.** Make a voice profile from 2 to 20 samples. |
+| `ellora_profiles_fetch_active` / `_by_id` | Find a voice profile id. |
+| `ellora_briefs_fetch_active` / `_by_id` | Find a writing brief id. |
+| `ellora_context_fetch_active` / `_by_id` | Read the team's company context documents. |
+| `ellora_context_capture` | Save a context document during a session. An admin activates it. |
+| `ellora_positioning_recommendations` | Get optional positioning and messaging advice. |
 
 Prompts: `ellora_review_loop`.
 
 ## Rules
 
-1. **Never invent results.** If the tools aren't connected, say so and carry on
-   without Ellora. Do not describe a finding, a score, or a `passed` verdict you
-   did not get back from `ellora_review`.
-2. **Don't route around access or plan limits.** Signup requires accepting the
-   terms and verifying the email; connection requires OAuth. The Free plan
-   permits one voice profile, one connected AI app, 50,000 words checked each
-   month, and no team members. See the dashboard Pricing page or
-   https://getellora.com/#pricing for Team plans (listed without
-   prices). Email us at hello@getellora.com or set up a call at
-   https://cal.com/getellorademo/client-demo.
-3. **Don't show unreviewed drafts as reviewed**, and don't claim a piece passed
-   when you stopped on `diminishing_returns`.
-4. **Follow `next_action`**, not your own judgment, about whether to keep
-   looping.
-5. **A brief is mandatory.** If the team has none, build the inline
-   `writing_brief_json` rather than skipping the review.
-6. **One piece of content, one session.**
+1. **Never make up results.** If the tools are not connected, say so and
+   continue without Ellora. Do not describe a finding, a score or a `passed`
+   result that `ellora_review` did not return.
+2. **Do not go around access or plan limits.** Sign-up needs the user to
+   accept the terms and confirm the email. A connection needs OAuth. The Free
+   plan allows one voice profile, one connected AI app, 50,000 words checked
+   each month, and no team members. For the Team plan, see the dashboard
+   Pricing page or https://getellora.com/#pricing (no prices shown).
+   Email us at hello@getellora.com or set up a call at https://cal.com/getellorademo/client-demo.
+3. **Do not show a draft as reviewed if Ellora did not review it.** Do not
+   say that a draft passed when you stopped on `diminishing_returns`.
+4. **Follow `next_action`**, not your own judgment, to decide whether to
+   continue the loop.
+5. **A brief is mandatory.** If the team has no brief, make the inline
+   `writing_brief_json`. Do not skip the review.
+6. **Use one session for one piece of content.**
