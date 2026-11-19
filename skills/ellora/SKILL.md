@@ -62,7 +62,7 @@ Email us at hello@getellora.com or set up a call at https://cal.com/getelloradem
 The dashboard Pricing page and https://getellora.com/#pricing show the plans,
 with no prices. Ellora can upgrade an existing account after we talk.
 
-## Step 1: Find the state
+## Find the state
 
 Do this one time, at the start. All the steps after it depend on the result.
 
@@ -93,9 +93,9 @@ Send the user to https://app.getellora.com/register and tell them to select
 
 The user must read and accept the terms. Do not accept the terms, tick the
 box or sign up for the user. Do not ask the user to send the code in the chat.
-Do not say that the account exists until the email check is complete. If the
-user already has an account, this step signs them in. It does not change
-their plan and does not make a second workspace.
+Do not say that the account exists until the user confirms the email code
+or magic link. If the user already has an account, this step signs them in.
+It does not change their plan and does not make a second workspace.
 
 After sign-in, go to State 2 and connect the AI app.
 
@@ -209,7 +209,7 @@ connection. The client then keeps and refreshes the tokens. If no browser
 opens, show the user the URL. The user opens it and pastes the callback URL
 back to you.
 
-After sign-in, do the check in Step 1 again, or run `cmd mcp list`, `/mcp` or
+After sign-in, do the state check again, or run `cmd mcp list`, `/mcp` or
 `opencode mcp list`. The server must show **connected**, not *needs
 authentication*.
 
@@ -280,10 +280,10 @@ different, follow this skill and `next_action`.
 6. **Read `convergence_recommendation`, then do what `next_action` says.**
    These are two fields. `convergence_recommendation` is `keep_rewriting`,
    `ready_to_verify` or `diminishing_returns`. `next_action` tells you what
-   to do next. Each item below is one `convergence_recommendation` value. In
-   all cases, follow `next_action`.
+   to do next. Each item below is one `convergence_recommendation` value. For
+   every value, follow `next_action`.
    - `keep_rewriting`: mandatory findings are open, or a verification failed
-     and passes are left. The response includes `rewrite_guidance`. Go to
+     and review rounds are left. The response includes `rewrite_guidance`. Go to
      step 7. **Do not show the draft to the user yet.**
    - `ready_to_verify`: no mandatory findings are open. On the first review
      of the session, when no judgment-required finding is open, `next_action`
@@ -293,14 +293,14 @@ different, follow this skill and `next_action`.
      Get a decision from a person before you deliver.
    - `diminishing_returns`: the mandatory findings stopped going down, you
      reached `max_iterations`, or the verification failed on the last
-     allowed pass. Stop the loop. Tell the user what is still wrong and ask
+     allowed review round. Stop the loop. Tell the user what is still wrong and ask
      what to do.
 
    **Blue findings never block.** They are optional suggestions, counted in
    `current_finding_counts.blue`. They never change
    `convergence_recommendation`, are never in the edit scope of
-   `rewrite_guidance`, and never need another pass by themselves. On a
-   `ready_to_verify` pass, `next_action` also counts the open blue
+   `rewrite_guidance`, and never need another review round by themselves. On a
+   `ready_to_verify` review, `next_action` also counts the open blue
    suggestions. You can apply them or not.
 7. **Rewrite, then review again.** When the response includes
    `rewrite_guidance`, use it to rewrite the content. Then **go back to step
@@ -322,15 +322,15 @@ different, follow this skill and `next_action`.
      Change nothing else.
 8. **Verification and learning are automatic.** There is no separate verify
    call.
-   - A pass that is not the first in the session includes the `verification`
-     block. When the pass succeeds against a saved profile, it also includes a
-     `learning_event`.
+   - A review call that passes and is not the first in the session includes
+     the `verification` block. When that verification succeeds against a
+     saved profile, the response also includes a `learning_event`.
    - A failed verification records no `learning_event` and sets the top-level
      `passed` to `false`. `convergence_recommendation` is then
-     `keep_rewriting` (with `rewrite_guidance`) until the pass limit. After
+     `keep_rewriting` (with `rewrite_guidance`) until the review-round limit. After
      that, it is `diminishing_returns` without `rewrite_guidance`. In both
      cases, follow `next_action`.
-   - `learning_event` is `recorded`, or `nothing_to_learn` when the pass
+   - `learning_event` is `recorded`, or `nothing_to_learn` when the review
      resolved no findings or repeats an earlier result. A recorded event does
      not edit the profile. It changes later rewrite guidance for that
      profile. For a test or a trial run, use a test profile, not the real
@@ -359,13 +359,13 @@ different, follow this skill and `next_action`.
 
 Repeat steps 5, 6 and 7 until step 6 tells you to stop. Do not stop early
 because the draft looks good enough. The `iteration` and `max_iterations`
-values tell you how many passes you have.
+values tell you how many review rounds you have.
 
 Use one session for one piece of content. For a different piece, or a
 different profile or brief, call `ellora_session_start` again.
 
 When the loop ends, show the final draft and a short summary: the number of
-passes, what changed in general, and what is still flagged that you chose to
+review rounds, what changed in general, and what is still flagged that you chose to
 keep. Do not show the raw finding JSON unless the user asks.
 
 ## Tools
