@@ -99,7 +99,7 @@ the draft passes. There is no separate verify call.
    summary. The response also carries `iteration` / `max_iterations`. Each
    bullet below is one `convergence_recommendation` value. In every case,
    follow `next_action`:
-   - **`keep_rewriting`** → open mandatory findings and/or a failed verification
+   - **`keep_rewriting`** → open mandatory findings, or a failed verification
      with passes left. The response includes `rewrite_guidance`. Go to step 7.
      **Do not show the draft to the user yet.**
    - **`ready_to_verify`** → no mandatory findings remain. On the session's
@@ -114,7 +114,7 @@ the draft passes. There is no separate verify call.
    **Blue findings never gate.** Optional suggestions in
    `current_finding_counts.blue`. They never change `convergence_recommendation`,
    never appear in `rewrite_guidance`'s edit scope, and never require another
-   pass on their own. On a `ready_to_verify` pass, `next_action` also names
+   pass on their own. On a `ready_to_verify` pass, `next_action` also counts
    open blue suggestions. Apply or ignore them.
 
 7. **Rewrite, then re-review.** When the response includes `rewrite_guidance`,
@@ -122,9 +122,10 @@ the draft passes. There is no separate verify call.
    new text and the same `content_session_id`. Send the whole revised content,
    not only the changed sentences. **Edit scope** covers only mandatory Red/Yellow
    findings (`rewrite_guidance` also has a Blue section). Change only the sentences
-   Edit scope names. A case-style, point-of-view, or question-rate finding covers
-   every sentence even though it is reported on sentence 1. After a failed verify
-   there is no Edit scope. `next_action` names what failed, and
+   Edit scope names. A mandatory VoiceDNA case-style, point-of-view, or
+   question-rate finding covers every sentence even though it is reported on
+   sentence 1. After a failed verify there is no Edit scope. `next_action`
+   names what failed, and
    `verification.failure_reasons` lists every reason.
    `verification.meaning_changes` and, when key words were lost,
    `verification.lost_key_words` give the detail. Put those facts back without
@@ -140,7 +141,8 @@ the draft passes. There is no separate verify call.
    block comparing the final text against the session's original content —
    and, on success against a saved profile, a `learning_event`. There is no
    separate verify call to make. Stop and deliver once you see
-   `verification.passed: true`. A failed verify records no `learning_event` and sets
+   `verification.passed: true` and no judgment-required finding is open (step 6).
+   A failed verify records no `learning_event` and sets
    top-level `passed` to `false`. `convergence_recommendation` becomes
    `keep_rewriting` (with `rewrite_guidance`) until the pass limit, then
    `diminishing_returns` without `rewrite_guidance`. Follow `next_action` in
