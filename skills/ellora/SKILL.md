@@ -277,7 +277,11 @@ different, follow this skill and `next_action`.
    this piece of content. In the same call, you can also send `model_name`,
    `model_class`, `model_version`, `thinking_effort`, `mcp_client_name` and
    `mcp_client_version`. These fields are optional and for analytics only.
-   They do not change the review.
+   They do not change the review. The response also carries `voice_extras`:
+   the writer's own extra words (hedges, talk markers, asides and the like)
+   with how many they usually use in 400 words. Keep their rate when you
+   write: do not strip these words out, and do not pile them on. A phrase
+   under `signature_phrases` is a preference, never a requirement.
 4. **Get positioning (optional).** Before you write, you can call
    `ellora_positioning_recommendations`. Its advice is advisory only.
 5. **Review.** Call `ellora_review` with the `content_session_id` and the
@@ -350,7 +354,9 @@ different, follow this skill and `next_action`.
    `{type, value, scope?, evidence?}`. `type` is one of `avoid_phrase`,
    `prefer_phrase`, `max_sentence_words`, `no_opener`, `punctuation_limit`,
    `pov`, `question_rate_max` or `freeform`. Ellora runs no model. It keeps
-   only the rules, never the texts.
+   the rules plus word counts and short phrases from `accepted_text`, never
+   the texts. A word stops being flagged once it appears in two of the
+   writer's pieces: build samples, or accepted pieces a team admin approved.
    - Do not set `user_approved`. The rules are then suggestions. Ellora
      promotes a rule when it occurs again in other sessions.
    - Set `user_approved: true` only when the user explicitly approved the rules
