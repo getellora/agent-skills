@@ -355,7 +355,8 @@ different, follow this skill and `next_action`.
    `prefer_phrase`, `max_sentence_words`, `no_opener`, `punctuation_limit`,
    `pov`, `question_rate_max` or `freeform`. Ellora runs no model. It keeps
    the rules plus word counts and short phrases from `accepted_text`, never
-   the texts. Those words stop being flagged only when an admin approved.
+   the texts. A word stops being flagged once it appears in two of the
+   writer's pieces: build samples, or accepted pieces a team admin approved.
    - Do not set `user_approved`. The rules are then suggestions. Ellora
      promotes a rule when it occurs again in other sessions.
    - Set `user_approved: true` only when the user explicitly approved the rules

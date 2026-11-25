@@ -166,7 +166,8 @@ the draft passes. There is no separate verify call.
    `no_opener`, `punctuation_limit`, `pov`, `question_rate_max` or
    `freeform`. Ellora runs no model and stores only rules plus word counts and short
    phrases from `accepted_text` (the writer's extra words), never either text;
-   those words stop being flagged only when an admin approved.
+   a word stops being flagged once it appears in two of the writer's pieces
+   (build samples, or accepted pieces a team admin approved).
    - Leave `user_approved` unset. The rules are then suggestions, and Ellora
      promotes one once it recurs across sessions.
    - Set `user_approved: true` only when the user explicitly approved the rules
