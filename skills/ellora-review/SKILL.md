@@ -80,7 +80,10 @@ the draft passes. There is no separate verify call.
    are **locked for the whole session** — every later call reuses them.
    Keep the returned `content_session_id` and pass it to every call below,
    for this one piece of content. The response also tells you
-   `max_iterations` (the loop budget).
+   `max_iterations` (the loop budget) and `voice_extras`, the writer's own
+   extra words with their usual count per 400 words: keep that rate, never
+   strip their words out or add more, and use a `signature_phrases` entry
+   only where it fits.
    - Pass `writing_brief_json` as a JSON **object**, never as a stringified
      one. Required fields: `version` (`"1"`), `audience`, `intent`, `format`.
    - `format` must be one of: `general`, `social`, `deck`, `outreach`,
@@ -161,7 +164,9 @@ the draft passes. There is no separate verify call.
    edits. Add typed rules for what changed, `{type, value, scope?, evidence?}`,
    with `type` one of `avoid_phrase`, `prefer_phrase`, `max_sentence_words`,
    `no_opener`, `punctuation_limit`, `pov`, `question_rate_max` or
-   `freeform`. Ellora runs no model and stores only rules, never either text.
+   `freeform`. Ellora runs no model and stores only rules plus word counts and short
+   phrases from `accepted_text` (the writer's extra words), never either text;
+   those words stop being flagged only when an admin approved.
    - Leave `user_approved` unset. The rules are then suggestions, and Ellora
      promotes one once it recurs across sessions.
    - Set `user_approved: true` only when the user explicitly approved the rules
