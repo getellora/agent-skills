@@ -71,7 +71,10 @@ the draft passes. There is no separate verify call.
 
 2. **Pick a writing brief.** Call `ellora_briefs_fetch_active`. Same pattern:
    one → use it; several → ask; none → construct an inline `writing_brief_json`
-   for this session only (it is never saved). **A brief is mandatory** —
+   for this session only (it is never saved), or, if the user wants to keep
+   one, save it with `ellora_brief_create` or, from 3-10 of their own posts,
+   `ellora_brief_from_samples` (any member; a member's brief is personal
+   unless they pass `scope: "team"` to propose it). **A brief is mandatory** —
    `ellora_session_start` fails without either a `writing_brief_id` or a
    `writing_brief_json`.
 
