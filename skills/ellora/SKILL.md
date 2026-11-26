@@ -264,7 +264,12 @@ different, follow this skill and `next_action`.
    around this.
 2. **Select a writing brief.** Call `ellora_briefs_fetch_active` and use the
    same steps. If no brief exists, make an inline `writing_brief_json` for
-   this session only. Ellora does not save it.
+   this session only. Ellora does not save it. If the user wants to keep a
+   brief, any member can save one: `ellora_brief_create` (name, channel,
+   audience, intent, words to avoid) or `ellora_brief_from_samples` (3-10 of
+   the user's own posts in one format). A member's brief is personal; pass
+   `scope: "team"` to propose it to the admins. A session on a personal brief
+   is private to the person who started it.
 
    **A brief is mandatory.** `ellora_session_start` fails without a
    `writing_brief_id` or a `writing_brief_json`. Send the JSON as an
