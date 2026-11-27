@@ -118,10 +118,10 @@ codex mcp login ellora
 
 Then run `opencode mcp auth ellora` and `npx skills add getellora/agent-skills -a opencode`.
 
-**Gemini CLI.**
+**Gemini CLI.** Install the Ellora extension. It adds the server and both skills.
 
 ```bash
-gemini mcp add --transport http ellora https://api.getellora.com/v1/external/mcp
+gemini extensions install https://github.com/getellora/agent-skills
 ```
 
 Then run `/mcp auth ellora` in Gemini CLI.

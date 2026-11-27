@@ -8,6 +8,7 @@ These notes moved here from the README. They are for the people who maintain thi
 |---|---|
 | `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `.mcp.json` | Claude Code, claude.ai, Cowork, Grok Build, and the Claude directory |
 | `plugin.json`, `mcp.json`, `assets/icon.png`, `assets/logo.png` | The ChatGPT plugin directory (Agent Plugins format, with `extensions.com.openai`) |
+| `gemini-extension.json` | Gemini CLI (`gemini extensions install`) and the Gemini CLI extension gallery, which lists repositories with the `gemini-cli-extension` topic |
 | `server.json` | The official MCP Registry, published by `.github/workflows/publish-mcp-registry.yml` as `io.github.getellora/ellora` |
 | `skills/` | Every client |
 | `assets/readme/` | The README images only. Each image has a light and a dark file. |
@@ -17,7 +18,7 @@ Every `mcpServers` copy-paste block in the README uses `streamableHttp`, the spe
 
 ## Keep the copies in sync
 
-The copy served at https://getellora.com/SKILL.md comes from the private `ellora-website` repository. A change to the skill lands in both places in the same pass: `skills/ellora/SKILL.md` here and `public/SKILL.md` there. Bump `metadata.version` in both files and `version` in `.claude-plugin/plugin.json` and `plugin.json`. Claude Code keeps plugin users on the old version until that number changes. In `ellora-website`, also update the version in `test/skill-md-frontmatter.test.mjs` and, when the review loop section changes, `REVIEW_LOOP_SHA256` in `test/prw7-skill-review-loop.test.mjs`. When the server's tool surface changes, set `version` in `server.json` to the server's new `#[Version]` and run the registry workflow.
+The copy served at https://getellora.com/SKILL.md comes from the private `ellora-website` repository. A change to the skill lands in both places in the same pass: `skills/ellora/SKILL.md` here and `public/SKILL.md` there. Bump `metadata.version` in both files and `version` in `.claude-plugin/plugin.json`, `plugin.json` and `gemini-extension.json`. Claude Code keeps plugin users on the old version until that number changes. In `ellora-website`, also update the version in `test/skill-md-frontmatter.test.mjs` and, when the review loop section changes, `REVIEW_LOOP_SHA256` in `test/prw7-skill-review-loop.test.mjs`. When the server's tool surface changes, set `version` in `server.json` to the server's new `#[Version]` and run the registry workflow.
 
 ## Contributors
 
